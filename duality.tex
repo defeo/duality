@@ -1,0 +1,228 @@
+\documentclass{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage[all]{xypic}
+
+\newcommand{\cat}[1]{\mathscr{#1}}
+\newcommand{\lcat}[1]{\mathbf{#1}}
+\newcommand{\C}{\cat{C}}
+\newcommand{\D}{\cat{D}}
+\renewcommand{\L}{\cat{L}}
+\newcommand{\comp}{\circ}
+\newcommand{\size}[1]{\lVert#1\rVert}
+\DeclareMathOperator{\ob}{ob}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\id}{id}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Complex}{\mathbb{C}}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\la}{\leftarrow}
+\DeclareMathOperator{\Time}{t}
+\DeclareMathOperator{\Space}{s}
+\newcommand{\computes}{\vdash}
+
+\newtheorem{definition}{Definition}
+\newtheorem{theorem}[definition]{Theorem}
+\newtheorem{lemma}[definition]{Lemma}
+\newtheorem{corollary}[definition]{Corollary}
+\newtheorem{proposition}[definition]{Proposition}
+\newtheorem{remark}[definition]{Remark}
+
+
+\begin{document}
+  \title{Tellegen's principle, dualities and applications}
+  \author{Luca De Feo}
+  \date{\today}
+  
+  \maketitle
+
+  \begin{abstract}
+    Tellegen's principle is a classical computer algebra result
+    stating that ``from every \emph{linear algorithm} computing a
+    linear application we can deduce another \emph{linear algorithm}
+    computing the transpose application that uses \emph{about} the
+    same space and time resources''.
+
+    Tellegen's principle can be made precise in many ways, yielding
+    theorems in the fields of computer algebra, algebraic complexity
+    and electric networks. Here we give a Tellegen's theorem in the
+    setting of category theory and we investigate its consequences.
+
+    We also give some practical application of the principle and
+    discuss the feasibility of a computer implementation of the
+    principle.
+
+    Our hope is to cover the whole subject from very abstract theory
+    to extreme practice. This work is fully experimental and still in
+    progress, so read carefully the footnotes!
+  \end{abstract}
+
+
+  \section{Category theory}
+  A category is
+
+  A covariant functor is
+  
+  A contravariant functor is
+
+  A natural transformation is
+
+  An equivalence of categories is, a duality of categories is
+
+  Examples (the category of finite dimensional free $A$-modules and
+  its self-duality)
+
+  
+  \section{Additions to category theory
+    \protect\footnote{This section is certainly the least elegant
+      one. A category theoretical restatement of the concepts
+      introduced here would be greatly welcome.}}
+
+  We want to model computations that stay inside a category. We can
+  think of the objects of our category as the data set of our
+  computation (inputs, outputs and work registers) and the action of
+  \emph{going through} an arrow will be interpreted as
+  \emph{performing} the computation.
+  
+  Since we are studying complexities, we need some way of quantifying
+  the time and the space used by a computation. Space is easy : we
+  just want to attach to each object the information of how much space
+  it takes to represent its generic element. This can be done by a
+  function $\size{.}$ that associates a natural number to each object
+  in a consistent way.
+
+  \begin{definition}[Size function]
+    Let $\C$ be a small category, $\size{.} : \ob(\C) \rightarrow \N$ is
+    said to be a \emph{size function} of $\C$ if the condition
+    \begin{equation}
+      \label{eq:size}
+      o_1 \text{ and } o_2 \text{ are isomorphic}
+      \Rightarrow \size{o_1} = \size{o_2}
+    \end{equation}
+    holds for every two objects $o_1,o_2\in\ob(\C)$.
+  \end{definition}
+  
+  Equivalently, a size function can be defined as a functor from the
+  skeleton of $\C$ to the category $\N$ of finite ordinals (natural
+  numbers) with all the functions, thus allowing us to consider
+  categories that aren't small.\footnote{I'm confused about this
+  definition. Though it might seem reasonable that isomorphic
+  structures should always take the same number of bits to represent
+  their objects, it seems to me that we're letting out of the door the
+  possibility of redundant representations and, finally, a very
+  important computer algebra technique: the ``change of
+  representation''. After all, can't we relax condition
+  \eqref{eq:size}?}
+
+  To take time into account, we must decide which arrows correspond to
+  \emph{atomic computations}, i.e. computations that cost a unit of
+  time. We can do this be distinguishing some arrows.
+
+  \begin{definition}[Language]
+    Let $\C$ be a small category, a language $\L$ is a subset of
+    $\hom(\C)$. It's elements are called
+    \emph{instructions}\footnote{I believe there exist a Yoneda-style
+    way of defining this concept for locally small
+    categories. Basically, add an initial object $I$ to $\C$ and
+    identify $\Hom(X,Y)$ in $\C$ to $\Hom\left(\Hom(I,I),
+    \Hom(X,Y)\right)$ in $\lcat{Set}$, then a well chosen subcategory
+    of $\lcat{Set}$ shall (hopefully) define $\L$. Does anyone want to
+    help me formalise this?}
+    
+    A language is said to be \emph{complete} if $(\ob(\C),\L)$ freely
+    generates $\C$.
+  \end{definition}
+
+  Completeness says that $\L$ is powerful enough to perform every
+  computation in $\C$; This is a nice, though not strictly necessary
+  property. We are now ready to define a computation.
+
+  \begin{definition}[Computation]
+    Let $\C$ be a category and $\L$ a language of $\C$, a
+    \emph{computation} is a finite sequence of $\C$ whose arrows all
+    belong to $\L$. If $s$ is the source of the sequence and $t$ is
+    the target, we note $C:s\ra t$ or simply $C$ for the
+    computation.
+    
+    Computations can be composed by the natural notion of composition
+    of sequences, so if $C_1 : b\ra c$ and $C_2 : a\ra b$ are two
+    computations, we note $C_1\comp C_2 : a\ra c$ for their
+    composition.
+
+    An arrow $f$ of $\C$ is said to be \emph{computable} if there
+    exists a computation $C = (c_0, c_1,\ldots,c_n)$ such that $f =
+    c_n\comp\ldots\comp c_1\comp c_0$, we note $C\computes f$.
+  \end{definition}
+
+  Sometimes the computation $C$ for a given $f$ will be understood and
+  we'll note $f$ instead of $C$ by abuse of notation, so, for example,
+  if $C_1\computes f_1$ and $C_2\computes f_2$ we'll note $f_1\comp
+  f_2$ instead of $C_1\comp C_2$. When we'll draw diagrams, we'll draw
+  instructions with continue lines and general arrows with dashed
+  lines, like on figure \ref{fig:comp}.
+  \begin{figure}[!h]
+    \[\xymatrix{
+      & \ar[r]\ar@{}[dr]|{C_2} & \ar[dr] &
+      & \ar[r]\ar@{}[dr]|{C_1} & \ar[dr] \\
+      a \ar[ur]\ar@{-->}[rrr]_{f_2} &&& b
+      \ar[ur]\ar@{-->}[rrr]_{f_1} &&& c
+    }\]
+    \caption{\label{fig:comp}A diagram illustrating computations,
+    computable arrows and composition.}
+  \end{figure}
+  
+  We now have all the elements to study computations in a
+  category. We'll study a category together with a size function and a
+  language over it. We'll call it a \emph{computational category} and
+  we'll write $(\C, \size{}, \L)$, or simply $\C$ when $\size{}$ and
+  $\L$ are understood.
+
+  In this setting, we can measure computations. As in computational
+  complexity, two measures will be relevant : time and space.
+
+  \begin{definition}
+    Let $(\C, \size{}, \L)$ be a computational category and let $C$ be
+    the computation
+    \[o_0 \ra o_1 \ra \cdots \ra o_n \text{ .}\]
+    We define the two quantities
+    \begin{align*}
+      \Time(C) &= n \text{,} \\
+      \Space(C) &= \max_{0\le i \le n} \size{o_i} \text{ ,}
+    \end{align*}
+    and we call the respectively the \emph{time-cost} and the
+    \emph{space-cost} of $C$.
+  \end{definition}
+
+
+  \section{Tellegen's theorem}
+  
+  \section{Application}
+
+
+  
+  \begin{thebibliography}{1}
+    
+  \bibitem{BCS}P.~Bürgisser, M.~Clausen \& M.~A.~Shokrollahi
+    \emph{Algebraic Complexity Theory}.
+    Springer, 1997.
+    
+  \bibitem{BLS03}A.~Bostan, G.~Lecerf \& E.~Schost,
+    Tellegen's Principle into Practice.
+    \emph{Proceedings of ISAAC 2003}.
+
+  \bibitem{WIKI}Wikipedia, The free encycolpedia.
+  
+  \end{thebibliography}
+
+\end{document}
+
+
+% Local Variables:
+% mode:flyspell
+% ispell-local-dictionary:"british"
+% End:
+
+% LocalWords:  Tellegen Tellegen's covariant functor contravariant
