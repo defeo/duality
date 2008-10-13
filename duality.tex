@@ -13,6 +13,8 @@
 \renewcommand{\L}{\cat{L}}
 \newcommand{\comp}{\circ}
 \newcommand{\size}[1]{\lVert#1\rVert}
+\newcommand{\sizein}[1]{\size{#1}^\mathrm{in}}
+\newcommand{\sizeout}[1]{\size{#1}_\mathrm{out}}
 \DeclareMathOperator{\ob}{ob}
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\id}{id}
@@ -124,13 +126,12 @@
   \begin{definition}[Language]
     Let $\C$ be a small category, a language $\L$ is a subset of
     $\hom(\C)$. It's elements are called
-    \emph{instructions}\footnote{I believe there exist a Yoneda-style
-    way of defining this concept for locally small
-    categories. Basically, add an initial object $I$ to $\C$ and
-    identify $\Hom(X,Y)$ in $\C$ to $\Hom\left(\Hom(I,I),
-    \Hom(X,Y)\right)$ in $\lcat{Set}$, then a well chosen subcategory
-    of $\lcat{Set}$ shall (hopefully) define $\L$. Does anyone want to
-    help me formalise this?}
+    \emph{instructions}\footnote{I'm trying to find a Yoneda-style way
+    of defining this concept for locally small categories. My idea was
+    : add an initial object $I$ to $\C$ and identify $\Hom(X,Y)$ in
+    $\C$ to $\Hom\left(\Hom(I,I), \Hom(X,Y)\right)$ in $\lcat{Set}$,
+    then a well chosen subcategory of $\lcat{Set}$ shall (hopefully)
+    define $\L$. Does anyone want to help me formalise this?}
     
     A language is said to be \emph{complete} if $(\ob(\C),\L)$ freely
     generates $\C$.
@@ -145,7 +146,11 @@
     \emph{computation} is a finite sequence of $\C$ whose arrows all
     belong to $\L$. If $s$ is the source of the sequence and $t$ is
     the target, we note $C:s\ra t$ or simply $C$ for the
-    computation.
+    computation ; we also set the following notation
+    \begin{align*}
+      &\sizein{C:s\ra t} = \size{s} \text{ ,}\\
+      &\sizeout{C:s\ra t} = \size{t} \text{ .}
+    \end{align*}
     
     Computations can be composed by the natural notion of composition
     of sequences, so if $C_1 : b\ra c$ and $C_2 : a\ra b$ are two
@@ -196,15 +201,69 @@
     \emph{space-cost} of $C$.
   \end{definition}
 
-  Considering single computations is enough to state a Tellegen's
-  theorem. From a computer science point of view, though, a
-  computation is still quite far from a ``real world'' algorithm. In a
-  computer scientist's mind an algorithm should be able to solve a
-  given problem for inputs of any (finite) size. This is exactly the
-  way we are going to define an algorithm.
+  Considering single computations is enough to state a weak form of
+  Tellegen's theorem. From a computer science point of view, though, a
+  computation is still quite far from a ``real world'' algorithm. The
+  first problem to sort out is the fact that the definition of a
+  language is too weak and allows us to do computationally impossible
+  things.
+  
+  \begin{definition}[Soundness]
+    Let $\L$ be a language, two instructions $a,b\in\L$ are said to be
+    \emph{equivalent} if there is a commutative diagram
+    \[\xymatrix{
+      s \ar[r]^a \ar@{-->}[d]^f & t \ar@{-->}[d]^g\\
+      s' \ar[r]^b & t'
+    }\]
+    such that $f$ and $g$ are isomorphisms.
+
+    A language is said to be \emph{sound} if for every instruction
+    $a:s\ra t$ and for every $s'$ isomorphic to $s$ there is an
+    instruction $b:s'\ra t'$ equivalent to $a$.
+  \end{definition}
+
+  Note that $f$ and $g$ are not necessarily instructions, so that even
+  if we have such a diagram, it might be computationally hard (or
+  impossible) to go from $s$ to $t'$.
+
+  From a practical point of view, two isomorphic objects are
+  indistinguishable, so that a non-sound language would give us an
+  unnatural way of distinguishing two such objects. That's why we'll
+  always require for languages to be sound.
+
+  Equivalence of instructions extends in a natural way to
+  computations. As a consequence a computation $C:s\ra t$ defines a
+  class\footnote{Is it true that $\C$ locally small $\Leftrightarrow
+  C_\equiv$ is a set ?}, noted $C_\equiv$, of equivalent computations
+  having for source each of the $s'$ isomorphic to $s$. Obviously, two
+  equivalent algorithms have the same time and space cost and sizes,
+  so that $\Time(C_\equiv)$, $\Space(C_\equiv)$, $\sizein{C_\equiv}$
+  and $\sizeout{C}$ are well defined. From now on we'll use
+  computations as representatives for their equivalence class and
+  we'll abuse of our notation by writing $C$ instead of $C_\equiv$.
+  
+  We are almost ready to define algorithms. In a computer scientist's
+  mind an algorithm should be able to solve a given problem for inputs
+  of any (finite) size. This is exactly the way we are going to define
+  it.
 
   \begin{definition}[Algorithm]
-    
+    Let $\C$ be a computationally sound category. An algorithm $A$ is
+    a set of (equivalence classes of) computations such that
+    ${\sizein{}:A\ra\N}$ is an injection.\footnote{Does anyone see a
+    more categorical definition of this one ? Anyway, I think that the
+    fact that $A$ is a set is very important.}
+  \end{definition}
+
+  Because $\sizein{}$ is injective, $A$ is a countable set. Moreover,
+  its inverse defines a partial function $i:\N\ra A$, then we can
+  define the complexity of an algorithm.
+  
+  \begin{definition}[Space and time complexity]
+    Given an algorithm $A$, its time complexity is the partial
+    function ${\Time_A : \N \ra \N}$ given by
+    \[\Time_A(n) = \Time(i(n)) \text{.}\]
+    Its space complexity $\Space_A$ is defined in the same way.
   \end{definition}
 
 
@@ -239,4 +298,4 @@
 % ispell-local-dictionary:"british"
 % End:
 
-% LocalWords:  Tellegen Tellegen's covariant functor contravariant
+% LocalWords:  Tellegen Tellegen's covariant functor contravariant injective
