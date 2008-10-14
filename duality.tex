@@ -2,7 +2,7 @@
 
 \usepackage[english]{babel}
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath,amssymb,amsthm}
+\usepackage{amsmath,amssymb,amsthm,latexsym}
 \usepackage{mathrsfs}
 \usepackage[all]{xypic}
 
@@ -18,12 +18,16 @@
 \DeclareMathOperator{\ob}{ob}
 \DeclareMathOperator{\Hom}{Hom}
 \DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Id}{Id}
 \newcommand{\N}{\mathbb{N}}
 \newcommand{\Complex}{\mathbb{C}}
 \newcommand{\ra}{\rightarrow}
 \newcommand{\la}{\leftarrow}
 \DeclareMathOperator{\Time}{t}
 \DeclareMathOperator{\Space}{s}
+\DeclareMathOperator{\coTime}{co-t}
+\DeclareMathOperator{\coSpace}{co-s}
+\DeclareMathOperator{\Par}{Par}
 \newcommand{\computes}{\vdash}
 
 \newtheorem{definition}{Definition}
@@ -64,7 +68,13 @@
 
 
   \section{Category theory}
+
   A category is
+
+  A sequence is, a morphism (isomorphism) of sequences is, the
+  category of the sequences $\C_\leadsto$
+  
+  The skeleton of a category is
 
   A covariant functor is
   
@@ -203,74 +213,183 @@
 
   Considering single computations is enough to state a weak form of
   Tellegen's theorem. From a computer science point of view, though, a
-  computation is still quite far from a ``real world'' algorithm. The
-  first problem to sort out is the fact that the definition of a
-  language is too weak and allows us to do computationally impossible
-  things.
-  
-  \begin{definition}[Soundness]
-    Let $\L$ be a language, two instructions $a,b\in\L$ are said to be
-    \emph{equivalent} if there is a commutative diagram
-    \[\xymatrix{
-      s \ar[r]^a \ar@{-->}[d]^f & t \ar@{-->}[d]^g\\
-      s' \ar[r]^b & t'
-    }\]
-    such that $f$ and $g$ are isomorphisms.
+  computation is still quite far from a ``real world'' algorithm. What
+  we need is to be able to talk about more than a computation at a
+  time.
 
-    A language is said to be \emph{sound} if for every instruction
-    $a:s\ra t$ and for every $s'$ isomorphic to $s$ there is an
-    instruction $b:s'\ra t'$ equivalent to $a$.
+  \begin{definition}[Morphism of computations]
+    Let $C$ and $C'$ be two computations, a \emph{morphism of
+      computations} $f:C\ra C'$ is a morphism of sequences from $C$ to
+    $C'$. An \emph{isomorphism of computations} is a morphism that is
+    an isomorphism of sequences. Two computations are said to be
+    \emph{isomorphic} if there is an isomorphism of computations
+    between them. Two instructions are said to be isomorphic if they
+    are isomorphic as computations.
+
+    The category of the computations of $\C$, noted $\C_\ra$, is the
+    subcategory of $\C_\leadsto$ whose objects are the computations
+    and whose arrows are the morphisms of computations.
   \end{definition}
 
-  Note that $f$ and $g$ are not necessarily instructions, so that even
+  Using diagrams, two isomorphic computations look like this
+  \[\xymatrix{
+    c_0 \ar[r]^{i_0} \ar@{-->}[d]^{f_0} & c_1 \ar@{-->}[d]^{f_1} \ar@{.}[rr] && c_n\ar@{-->}[d]^{f_n}\\
+    c_0' \ar[r]^{i_0'} & c_1' \ar@{.}[rr] && c_n'
+  }\]
+  Note that the $f_i$'s are not necessarily computations, so that even
   if we have such a diagram, it might be computationally hard (or
-  impossible) to go from $s$ to $t'$.
-
-  From a practical point of view, two isomorphic objects are
-  indistinguishable, so that a non-sound language would give us an
-  unnatural way of distinguishing two such objects. That's why we'll
-  always require for languages to be sound.
-
-  Equivalence of instructions extends in a natural way to
-  computations. As a consequence a computation $C:s\ra t$ defines a
-  class\footnote{Is it true that $\C$ locally small $\Leftrightarrow
-  C_\equiv$ is a set ?}, noted $C_\equiv$, of equivalent computations
-  having for source each of the $s'$ isomorphic to $s$. Obviously, two
-  equivalent algorithms have the same time and space cost and sizes,
-  so that $\Time(C_\equiv)$, $\Space(C_\equiv)$, $\sizein{C_\equiv}$
-  and $\sizeout{C}$ are well defined. From now on we'll use
-  computations as representatives for their equivalence class and
-  we'll abuse of our notation by writing $C$ instead of $C_\equiv$.
+  impossible) to go from $c_0$ to $c_n$.
   
-  We are almost ready to define algorithms. In a computer scientist's
-  mind an algorithm should be able to solve a given problem for inputs
-  of any (finite) size. This is exactly the way we are going to define
-  it.
+  By means of this definition, a computation $C:s\ra t$ defines a
+  class\footnote{Is it true that $\C$ locally small $\Leftrightarrow
+    C_\equiv$ is a set ?}, noted $C_\equiv$, of isomorphic
+  computations. Obviously, two isomorphic computations have the same
+  time-cost, space-cost and sizes, so that $\Time(C_\equiv)$,
+  $\Space(C_\equiv)$, $\sizein{C_\equiv}$ and $\sizeout{C}$ are well
+  defined. From now on we'll use computations as representatives for
+  their isomorphism class and we'll abuse of our notation by writing
+  $C$ instead of $C_\equiv$.
+  
+%%   The next problem to sort out is the fact that the definition of a
+%%   language is so weak that it allows us to do computationally
+%%   impossible things.
+  
+%%   \begin{definition}[Soundness]
+%%     A language is said to be \emph{sound} if for every instruction
+%%     $a:s\ra t$ and for every $s'$ isomorphic to $s$ there is an
+%%     instruction $b:s'\ra t'$ isomorphic to $a$.
+%%   \end{definition}
+
+%%   From a practical point of view, two isomorphic objects are
+%%   indistinguishable, so that a non-sound language would give us an
+%%   unnatural way of distinguishing two such objects. That's why we'll
+%%   always require for languages to be sound.
+
+  An algorithm is more than just an isomorphism class of
+  computations. When a computer scientist writes an algorithm, he
+  chooses to perform a different computation depending on some values
+  in a parameter space. For example, depending on the input size he
+  may chose to iterate some instruction a certain number of
+  times. Generalising this idea, we get the following definition.
 
   \begin{definition}[Algorithm]
-    Let $\C$ be a computationally sound category. An algorithm $A$ is
-    a set of (equivalence classes of) computations such that
-    ${\sizein{}:A\ra\N}$ is an injection.\footnote{Does anyone see a
-    more categorical definition of this one ? Anyway, I think that the
-    fact that $A$ is a set is very important.}
+    Let $\C$ be a computational category and let $\C_\ra$ be its
+    category of computations. Let $\Par$ be a recursively
+    enumerable set and let $\lcat{Par}$ be the discrete category over
+    it. An \emph{algorithm} $A$ is a functor from $\lcat{Par}$ to
+    $\C_\ra$.
+
+    $\Par$ is called the parameter space of $A$.
   \end{definition}
 
-  Because $\sizein{}$ is injective, $A$ is a countable set. Moreover,
-  its inverse defines a partial function $i:\N\ra A$, then we can
-  define the complexity of an algorithm.
-  
+  Since $\Par$ is recursively enumerable, $A$ defines a recursively
+  enumerable set of computations. It can then be viewed as a function
+  from $\Par$ to some sets of relevant properties about computations,
+  like in the following definition.
+
   \begin{definition}[Space and time complexity]
-    Given an algorithm $A$, its time complexity is the partial
-    function ${\Time_A : \N \ra \N}$ given by
-    \[\Time_A(n) = \Time(i(n)) \text{.}\]
-    Its space complexity $\Space_A$ is defined in the same way.
+    Given an algorithm $A:\Par\ra\C_\ra$, its \emph{time complexity}
+    is the partial function ${\Time_A:\Par\ra\N}$ given by
+    \begin{equation*}
+      \Time_A(x) = \Time(A(x)) \text{,}
+    \end{equation*}
+    Its \emph{space complexity} $\Space_A$ is defined in the same way.
   \end{definition}
 
+  When $\Par$ is $\N^n$ for some integer $n$, we find that the
+  complexities are functions $\N^n\ra\N$ as we are used to. If the
+  decision procedure for $\Par$ is hard, or even non-terminating, we
+  hide inside it part of the real complexity of $A$, then $\Time_A$
+  and $\Space_A$ won't account for such an added complexity. That's
+  why in practical applications we'll choose \emph{easily} decidable
+  sets such as $\N$, $a\N$ for some integer $a$, finite products of
+  \emph{easily} decidable sets, etc. From a theoretic point of view,
+  anyway, nothing prevents us from taking for $\Par$ the set of prime
+  numbers or the set of solvable Diophantine equations.
+
+  \paragraph{Example}
+  As an example, the category $\lcat{FMod}_R$ of finite dimensional
+  free $R$-modules can be given a structure of computational
+  category. Following \cite{BLS03}, we give the following operators
+  \begin{align*}
+    +_1 : R^2 &\ra R^2         &   +_2 : R^2&\ra R^2       &  *_a : R&\ra R\\
+         (p,q)&\mapsto(p+q,q)  &      (p,q)&\mapsto(p,p+q) &       p&\mapsto ap
+  \end{align*}
+  In order to be consistent with our setting, we add a projection and
+  an injection
+  \begin{align*}
+    \pi : R&\ra 0     &  \iota : 0&\ra R   \\
+          p&\mapsto0  &          0&\mapsto0
+  \end{align*}
+  Then we define the language $\L$ over $\lcat{FMod}_R$ as 
+  \begin{equation}
+    \label{eq:linlang}
+    \L = \Bigl\{\Id_n\times\mathrm{op}\times\Id_m \Bigl\lvert
+    n,m\in\N, \mathrm{op}\in\{+_1,+_2,*_a,\pi,\iota\;|\;a\in R\} \Bigr\}
+    \text{.}
+  \end{equation}
+  The completeness of the language is not obvious and I'll prove it
+  one day.
+
+  The space function is exactly what one would expect it to be :
+  \begin{equation}
+    \size{R^n} = n \text{.}
+  \end{equation}
+  
+  Let $\ell_n$ be the linear form $R^n\mapsto R$ that maps all the
+  vectors of the canonical base to $1$, imagine that we want an
+  algorithm that given any element in $v\in R^n$ computes $\ell_n(v)$,
+  for any $n$.
+
+  The actual action of such an algorithm is determined by the size $n$
+  of the input vector, hence a suitable parameter space is $\N$. Our
+  algorithm $A:\N\ra\C_\ra$ sends an integer $n$ over the computation
+  of $\ell_n$. The fact that a computation for $\ell_n$ really exists
+  is showed by the following diagram
+  \[\xymatrix{
+    R^n\ar[r]^{+_2\times{\Id_{n-2}}} & R^n\ar[r]^{\pi\times{\Id_{n-1}}} &
+    R^{n-1} \ar@{.}[rr] && R
+  }\]
+  
+  With a little more insight, we see that we have just defined the
+  algorithm given by the following C-like syntax
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{verbatim}
+for i = 0 to n-2 do
+   a[1] = a[1] + a[2]
+   a = &(a[1])
+end for
+\end{verbatim}
+    \end{minipage}
+  \end{center}
+
+  Space and time complexities are then functions $\N\ra\N$. As we
+  would expect, $\Space_A$ is the function $n$, while $\Time_A$ is
+  $2n$.
 
 
   \section{Tellegen's theorem}
+
+  Tellegen's theorem talks about transformations of algorithms. In
+  category theory transforming one category into another is done
+  through the use of functors.
+
+  \begin{definition}[Tellegen functor]
+    Let $(\C,\size{}_{\C},\L)$ and $(\D,\size{}_{\D},\cat{M})$ be two
+    computational categories. A (covariant or contravariant) functor
+    $F:\C\ra\D$ is a \emph{Tellegen functor} if $F(\L)\subset\cat{M}$.
+  \end{definition}
+
+  Tellegen functors preserve computations, so if $C$ is a computation
+  of $\C$, we note $F(C)$ its image in $D$, then it's evident that
+  $\Time(F(C)) = \Time(C)$. Functors preserve isomorphisms too, so
+  $F(C_\equiv) \subset F(C)_\equiv$.
+
+
   
   \section{Tellegen's principle into practice}
+  \label{sec:practice}
   
   \section{Application}
 
@@ -299,3 +418,4 @@
 % End:
 
 % LocalWords:  Tellegen Tellegen's covariant functor contravariant injective
+% LocalWords:  coalgorithm cocomplexity bialgorithm subcategory
