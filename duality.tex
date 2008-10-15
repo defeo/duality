@@ -131,7 +131,7 @@
 
   To take time into account, we must decide which arrows correspond to
   \emph{atomic computations}, i.e. computations that cost a unit of
-  time. We can do this be distinguishing some arrows.
+  time. We can do this by distinguishing some arrows.
 
   \begin{definition}[Language]
     Let $\C$ be a small category, a language $\L$ is a subset of
@@ -141,7 +141,13 @@
     : add an initial object $I$ to $\C$ and identify $\Hom(X,Y)$ in
     $\C$ to $\Hom\left(\Hom(I,I), \Hom(X,Y)\right)$ in $\lcat{Set}$,
     then a well chosen subcategory of $\lcat{Set}$ shall (hopefully)
-    define $\L$. Does anyone want to help me formalise this?}
+    define $\L$. Does anyone want to help me formalise this? But see
+    next note too.}\footnote{The last changes to this work have
+    defined the category $\C_\ra$ of computations in $\C$. It turns
+    out that it is a subcategory of $\C_\leadsto$, the category of
+    finite sequences of $\C$. May it be possible to swap the order of
+    this presentation and define the language as a subcategory of
+    $\C_\leadsto$?}
     
     A language is said to be \emph{complete} if $(\ob(\C),\L)$ freely
     generates $\C$.
@@ -175,9 +181,9 @@
   Sometimes the computation $C$ for a given $f$ will be understood and
   we'll note $f$ instead of $C$ by abuse of notation, so, for example,
   if $C_1\computes f_1$ and $C_2\computes f_2$ we'll note $f_1\comp
-  f_2$ instead of $C_1\comp C_2$. When we'll draw diagrams, we'll draw
-  instructions with continue lines and general arrows with dashed
-  lines, like on figure \ref{fig:comp}.
+  f_2$ instead of $C_1\comp C_2$. When we'll draw diagrams, we'll use
+  continue lines for instructions and dashed lines for general arrows,
+  like on figure \ref{fig:comp}.
   \begin{figure}[!h]
     \[\xymatrix{
       & \ar[r]\ar@{}[dr]|{C_2} & \ar[dr] &
@@ -231,7 +237,7 @@
     and whose arrows are the morphisms of computations.
   \end{definition}
 
-  Using diagrams, two isomorphic computations look like this
+  Using diagrams, a morphism of computations looks like this
   \[\xymatrix{
     c_0 \ar[r]^{i_0} \ar@{-->}[d]^{f_0} & c_1 \ar@{-->}[d]^{f_1} \ar@{.}[rr] && c_n\ar@{-->}[d]^{f_n}\\
     c_0' \ar[r]^{i_0'} & c_1' \ar@{.}[rr] && c_n'
@@ -283,9 +289,9 @@
   \end{definition}
 
   Since $\Par$ is recursively enumerable, $A$ defines a recursively
-  enumerable set of computations. It can then be viewed as a function
-  from $\Par$ to some sets of relevant properties about computations,
-  like in the following definition.
+  enumerable set of (isomorphism classes of) computations. It can then
+  be viewed as a function from $\Par$ to some sets of relevant
+  properties about computations, like in the following definition.
 
   \begin{definition}[Space and time complexity]
     Given an algorithm $A:\Par\ra\C_\ra$, its \emph{time complexity}
