@@ -303,15 +303,9 @@
   \end{definition}
 
   When $\Par$ is $\N^n$ for some integer $n$, we find that the
-  complexities are functions $\N^n\ra\N$ as we are used to. If the
-  decision procedure for $\Par$ is hard, or even non-terminating, we
-  hide inside it part of the real complexity of $A$, then $\Time_A$
-  and $\Space_A$ won't account for such an added complexity. That's
-  why in practical applications we'll choose \emph{easily} decidable
-  sets such as $\N$, $a\N$ for some integer $a$, finite products of
-  \emph{easily} decidable sets, etc. From a theoretic point of view,
-  anyway, nothing prevents us from taking for $\Par$ the set of prime
-  numbers or the set of solvable Diophantine equations.
+  complexities are functions $\N^n\ra\N$ as we are used to. But in
+  general nothing prevents us from taking for $\Par$ the set of prime
+  numbers or even the set of solvable Diophantine equations.
 
   \paragraph{Example}
   As an example, the category $\lcat{FMod}_R$ of finite dimensional
@@ -374,6 +368,26 @@ end for
   would expect, $\Space_A$ is the function $n$, while $\Time_A$ is
   $2n$.
 
+
+  \paragraph{Exemple}
+  Consider the category made of two objects and two arrows that are
+  both in $\L$.
+  \[\xymatrix{ Y \ar@(dl,ul)^{\id_Y} & N \ar@(ur,dr)^{\id_N} }\]
+  Computations in $\C_\ra$ are all the sequences of finite length that
+  stay either in $Y$ or in $N$. Let $\Par$ be a parameter space, such
+  a category can be used to state any decision problem in $\Par$.
+
+  As an exemple, let $T$ be the set of all Turing machines over an
+  alphabet $\Sigma$, we chose $T\times\Sigma^\ast$ as our parameter
+  space and we define the algorithm $A:T\times\Sigma^\ast\ra\C_\ra$ in
+  the following way
+  \begin{equation*}
+    A(t,s) = \begin{cases}
+      \id_Y & \text{if $t(s)$ halts,}\\
+      \id_N & \text{if $t(s)$ loops forever.}
+    \end{cases}
+  \end{equation*}
+  
 
   \section{Tellegen's theorem}
 
