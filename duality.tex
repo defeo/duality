@@ -20,6 +20,7 @@
 \DeclareMathOperator{\id}{id}
 \DeclareMathOperator{\Id}{Id}
 \newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
 \newcommand{\Complex}{\mathbb{C}}
 \newcommand{\ra}{\rightarrow}
 \newcommand{\la}{\leftarrow}
@@ -49,17 +50,15 @@
     Tellegen's principle is a classical computer algebra result
     stating that ``from every \emph{linear algorithm} computing a
     linear application we can deduce another \emph{linear algorithm}
-    computing the transpose application that uses \emph{about} the
-    same space and time resources''.
+    computing the transpose application using \emph{about} the same
+    space and time resources''.
 
     Tellegen's principle can be made precise in many ways, yielding
     theorems in the fields of computer algebra, algebraic complexity
     and electric networks. Here we give a Tellegen's theorem in the
     setting of category theory and we investigate its consequences.
-
-    We also give some practical application of the principle and
-    discuss the feasibility of a computer implementation of the
-    principle.
+    Finally, we discuss the feasibility of a computer implementation
+    of the principle.
 
     Our hope is to cover the whole subject from very abstract theory
     to extreme practice. This work is fully experimental and still in
@@ -280,10 +279,23 @@
 
   \begin{definition}[Algorithm]
     Let $\C$ be a computational category and let $\C_\ra$ be its
-    category of computations. Let $\Par$ be a recursively
-    enumerable set and let $\lcat{Par}$ be the discrete category over
-    it. An \emph{algorithm} $A$ is a functor from $\lcat{Par}$ to
-    $\C_\ra$.
+    category of computations. Let $\Par$ be a recursively enumerable
+    set and let $\lcat{Par}$ be the discrete category over it. An
+    \emph{algorithm} $A$ is a functor from $\lcat{Par}$ to
+    $\C_\ra$.\footnote{I'm not quite sure this definition is strong
+      enough. The idea is to give a model as strong as any other
+      computational model, such as Turing machines or computer
+      programs. I'm afraid, though not sure, that this definition
+      allows to write decision procedures for problems that are not
+      recursively enumerable (i.e., semi-decidable), thus making this
+      model strictly stronger than Turing machines. I see two ways to
+      fix this :\begin{itemize}
+      \item I ignore it, but maybe any subset of a r.e. set is r.e. In
+        this case, there's nothing to do and the definition is good;
+      \item r.e subsets of $\Par$ are the open sets of a topology of
+        $\Par$. Asking for some sort of continuity (perhaps with a
+        discrete topology over $\ob(\C_\ra)$), shall fix the problem.
+    \end{itemize}}
 
     $\Par$ is called the parameter space of $A$.
   \end{definition}
@@ -357,7 +369,7 @@
     \begin{minipage}{0.7\textwidth}
 \begin{verbatim}
 for i = 0 to n-2 do
-   a[1] = a[1] + a[2]
+   a[1] = a[0] + a[1]
    a = &(a[1])
 end for
 \end{verbatim}
@@ -369,7 +381,7 @@ end for
   $2n$.
 
 
-  \paragraph{Exemple}
+  \paragraph{Example}
   Consider the category made of two objects and two arrows that are
   both in $\L$.
   \[\xymatrix{ Y \ar@(dl,ul)^{\id_Y} & N \ar@(ur,dr)^{\id_N} }\]
@@ -377,9 +389,9 @@ end for
   stay either in $Y$ or in $N$. Let $\Par$ be a parameter space, such
   a category can be used to state any decision problem in $\Par$.
 
-  As an exemple, let $T$ be the set of all Turing machines over an
-  alphabet $\Sigma$, we chose $T\times\Sigma^\ast$ as our parameter
-  space and we define the algorithm $A:T\times\Sigma^\ast\ra\C_\ra$ in
+  As an example, let $T$ be the set of all Turing machines over an
+  alphabet $\Sigma$. We chose $T\times\Sigma^\ast$ as our parameter
+  space and we define the algorithm ${A:T\times\Sigma^\ast\ra\C_\ra}$ in
   the following way
   \begin{equation*}
     A(t,s) = \begin{cases}
@@ -388,6 +400,17 @@ end for
     \end{cases}
   \end{equation*}
   
+  It is evident that $\Time_A$ is the constant function $1$, while the
+  algorithm is a decision procedure for the famous halting problem,
+  which is known to be semi-decidable. The paradox is due to the fact
+  that the time complexity function we defined accounts only for what
+  happens inside the category, thus allowing us to hide a lot of
+  complexity (potentially all of it) inside the parameter space.
+
+  As we'll discuss in section \ref{sec:practice}, this phenomenon is
+  fundamental to understand how automatic transposition of computer
+  programs works.
+
 
   \section{Tellegen's theorem}
 
@@ -401,17 +424,231 @@ end for
     $F:\C\ra\D$ is a \emph{Tellegen functor} if $F(\L)\subset\cat{M}$.
   \end{definition}
 
-  Tellegen functors preserve computations, so if $C$ is a computation
-  of $\C$, we note $F(C)$ its image in $D$, then it's evident that
-  $\Time(F(C)) = \Time(C)$. Functors preserve isomorphisms too, so
-  $F(C_\equiv) \subset F(C)_\equiv$.
+  A functor $F:\C\ra\D$ induces a functor
+  $F_\leadsto:\C_\leadsto\ra\D_\leadsto$; moreover, Tellegen functors
+  induce a functor $F_\ra:\C_\ra\ra\D_\ra$. If $C$ is a computation,
+  by abuse of notation we'll note $F(C)$ instead of $F_\ra(C)$ for its
+  image in $\D_\ra$. It is evident that $\Time(F(C)) = \Time(C)$ and,
+  since functors preserve isomorphisms, that $F(C_\equiv) \subset
+  F(C)_\equiv$. Space complexity is not preserved in general by a
+  Tellegen functor, but suppose that we know a bound $B:\N\ra\N$ such
+  that $\size{F(C)} \le B(n)$ for every computation $C$ such that
+  $\size{C} = n$. We'll note $F\le_{\Space} B$ if $B$ is such a
+  bound. We now have all the elements to state Tellegen's theorem.
 
+  \begin{theorem}[Tellegen's theorem]
+    Let $F:\C\ra\D$ be a Tellegen functor, let $\Par$ be a parameter
+    space and let $A:\Par\ra\C_\ra$ be an algorithm. The functor
+    $F\comp A$ is an algorithm for $\D$, noted $F(A)$. Its time
+    complexity $\Time_{F(A)}$ is the same as $\Time_A$. Moreover, if
+    $F\le_{\Space} B$, then $\Space_{F(A)} = B\comp\Space_A$.
+  \end{theorem}
 
+  The most useful cases of Tellegen's theorem are when $\C$ and $\D$
+  are two equivalent (or dual) categories and the two functors
+  expressing the equivalence (or duality) are indeed Tellegen's
+  functors. In this case every algorithm in $\C$ can be moved to an
+  algorithm in $\D$ and vice versa, so that any optimisation to an
+  algorithm can be done in any of the two categories and then brought
+  to the other. If moreover $\Id\le_{\Space}F\le_{\Space}\Id$, then
+  moving algorithms between $\C$ and $\D$ guarantees that there's no
+  loss of space efficiency.
+
+  \paragraph{Example}
+  Consider the category $\lcat{FMod}_R$ with the computational
+  structure we gave in the last section. There is a well known
+  self-duality over $\lcat{FMod}$ given by the functor $T$ that
+  associates to every linear applications its transpose; notice that
+  $T$ is its own inverse. By noticing the following equalities
+  \[T(+_1) = +_2 \qquad T(*_a) = *_a \qquad T(\pi) = \iota \qquad T(\Id^n) = \Id^n\]
+  we conclude that $T$ is a Tellegen functor and we easily see that it
+  preserves space complexities. This gives us the classical
+  formulation of Tellegen's theorem \cite{BCS,BLS03}.
+
+  \paragraph{Example}
+  Consider the category $\cat{Q}$ whose objects are the vector spaces
+  $\left(\Complex^2\right)^{\otimes n}$ for any integer $n$ and whose
+  arrows are all the unitary\footnote{Recall that $U$ unitary means
+    $U$ invertible and $U^\ast=U^{-1}$.} transformations.
   
+  This category is widely used in quantum computing, in fact a quantum
+  circuit is defined exactly as a computation in this category. The
+  choice of the language may vary depending on the particular
+  presentation of the model, but a pretty common one is given by the
+  following operators
+  \begin{equation*}
+    H = \frac{1}{\sqrt{2}}\begin{pmatrix}
+      1 & -1 \\ -1 & 1
+    \end{pmatrix},
+    \qquad
+    R = \begin{pmatrix}
+      1 & 0 \\ 0 & e^{2\pi i }
+    \end{pmatrix},
+    \qquad
+    CNOT = \begin{pmatrix}
+      1 & 0 & 0 & 0\\
+      0 & 1 & 0 & 0\\
+      0 & 0 & 0 & 1\\
+      0 & 0 & 1 & 0
+    \end{pmatrix}.
+  \end{equation*}
+  The language is then defined as
+  \begin{equation*}
+    \L = \Bigl\{\Id_2^{\otimes n}\otimes\mathrm{op}\otimes\Id_2^{\otimes m}\Bigl\lvert
+    n,m\in\N, \mathrm{op}\in\{H,R,R^\ast,CNOT\} \Bigr\}
+    \text{.}
+  \end{equation*}
+  
+  The size function is classically defined as
+  $\size{(\Complex^2)^{\otimes n}} = n$, that is the number of
+  \emph{qubits} the circuit operates on. Observe that since unitaries
+  are invertible, they are auto-morphisms of the objects, then
+  $\Space(C) = \sizein{C} = \sizeout{C}$ for any computation.
+
+  This category has a well known self-duality given by the functor
+  $\ast$ that sends any unitary on its inverse\footnote{Recall that
+    inverse is the same thing as adjoint for unitaries. This makes the
+    functor $\ast$ very similar to the functor $T$ of the previous
+    example.}. It is easy to check that every element of $\L$ is its
+  own inverse, except for $R^{-1} = R^\ast$, thus making $\ast$ a
+  Tellegen functor (that is its own inverse).
+
+  In this case Tellegen's theorem tells us a very well known axiom of
+  quantum computing : ``Every computation is invertible. The inverse
+  computation is done by reversing the circuit''.
+
+  These two examples are the only well known applications of
+  Tellegen's principle I'm aware of. Anyway, there's tons of well
+  known category equivalences and dualities out there, that have been
+  studied by mathematicians for centuries now. One may then ask if any
+  of these equivalences can be turned into an useful Tellegen
+  equivalence allowing us to apply transformation techniques to well
+  known algorithms.
+  
+
   \section{Tellegen's principle into practice}
   \label{sec:practice}
+  In this section we are going to restrict ourself to Tellegen's
+  theorem in the case $\C = \lcat{FMod}_R$. All the discussion will be
+  general, though, and its ideas can be applied to the general
+  Tellegen's theorem.
+
+  When it comes down to really use Tellegen's principle to transform a
+  computer program we've written into its transpose, it quickly comes
+  up to a huge headache.
+
+  The problem is that when we write a program we rarely code just one
+  computation. We use instead a lot of \emph{non-linear} operators
+  such as \verb|if|'s, \verb|while|'s and \verb|for|'s in order to
+  synthesise the whole algorithm $A:\Par\ra\C_\ra$ into one single
+  piece of code. The added \emph{non-linear} complexity required to
+  express the mapping from $\Par$ to $\C_\ra$ is thus mixed together
+  with the \emph{linear} operations that are indeed instructions of
+  $\C$.
+
+  On the other hand, the representation of a program as an algorithm
+  $A:\Par\ra\C$ is of course not unique. In fact, any computer program
+  can be viewed as a function on bit-strings
+  $f:\{0,1\}^\ast\ra\{0,1\}^\ast$, so that it can be given a
+  description as an algorithm $A:\{0,1\}^\ast\ra\lcat{FMod}_{\Z\ra}$,
+  where any input $i$ is mapped to $*_a$ where $a$ is the integer
+  whose binary representation is $f(i)$. With a bit more work, we can
+  give a similar description as an algorithm
+  $A:\{0,1\}^\ast\ra\lcat{FMod}_{R\ra}$ for any ring $R$.\footnote{The
+    idea is that if $R$ has no torsion, then it contains $\Z$ and the
+    same construction can be performed. Otherwise, let $r$ be its
+    torsion and let $a$ be the integer whose binary expansion is
+    $f(i)$, write $a$ in base $r$ as \[a = \sum a_ir^i\text{,}\] then
+    map $i$ over $*_{a_0}\comp*_{a_1}\comp\cdots\comp_{a_n}$. The time
+    complexity of such an algorithm is $\lceil\log_ra\rceil$.}
+
+  Hence, the problem of \emph{automatic transposition} presents two
+  complementary difficulties. One one hand, find the parameter space
+  that gives the least complexity for the mapping $\Par\ra\C_\ra$, on
+  the other hand split the code in two sets of instructions : those
+  that are linear for the chosen mapping (and thus need to be
+  transposed) and those that are not.
+
+  Consider again this example that computes the linear form $\ell_n$
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{verbatim}
+for i = 0 to n-2 do
+   a[i+1] = a[i] + a[i+1]
+   a[i] = 0
+end for
+\end{verbatim}
+    \end{minipage}
+  \end{center}
+  by analysing the code we can see that a non-linear test is done on
+  $n$ (the test for halting the loop), thus $n$ is a good thing to put
+  in the parameter space, so let's say that our parameter space is
+  $\N$.
   
-  \section{Application}
+  We now have to understand what happens for a fixed $n$. The
+  instructions that are performed in this case are
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{verbatim}
+   a[1] = a[0] + a[1]
+   a[0] = 0
+   a[2] = a[1] + a[2]
+   a[1] = 0
+   ...
+   a[n-1] = a[n-2] + a[n-1]
+   a[n-2] = 0
+\end{verbatim}
+    \end{minipage}
+  \end{center}
+  Recall that $T(*_0) = *_0$ and $T(+_1) = +_2$, then the
+  transposition of this code gives
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{verbatim}
+   a[n-2] = 0
+   a[n-2] = a[n-2] + a[n-1]
+   ...
+   a[1] = 0
+   a[1] = a[1] + a[2]
+   a[0] = 0
+   a[0] = a[0] + a[1]
+\end{verbatim}
+    \end{minipage}
+  \end{center}
+  Putting again things together we have
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{verbatim}
+for i = n-2 to 0 do
+   a[i] = 0
+   a[i] = a[i] + a[i+1]
+end for
+\end{verbatim}
+    \end{minipage}
+  \end{center}
+  which is easily seen as the program that copies the value of
+  \verb|a[n]| in all the coordinates of the vector, as we would have
+  expected by transposing the whole matrix :
+  \begin{equation*}
+    \ell_n = \begin{pmatrix}
+      0 & \hdotsfor{3} & 0\\
+      \vdots  &  &\vdots&& \vdots \\
+      0 & \hdotsfor{3} & 0\\
+      1 & \hdotsfor{3} & 1
+    \end{pmatrix}
+  \end{equation*}
+  
+  It is true in general that, whenever we have a \verb|for| loop
+  running over a variable in the parameter space, the transposition of
+  the program is a new \verb|for| loop running backwards over the
+  variable and whose body has been transposed. Similar rules apply for
+  the other classic constructions of programming languages, thus
+  allowing us to semi-automatically transpose programs.
+
+  Whether or not it is possible to fully automate the process of
+  transposing a program is an open problem. A better understanding of
+  how to identify the better (or at least a good) parameter space
+  is certainly a fundamental step to give an answer.
 
 
   
@@ -438,4 +675,4 @@ end for
 % End:
 
 % LocalWords:  Tellegen Tellegen's covariant functor contravariant injective
-% LocalWords:  coalgorithm cocomplexity bialgorithm subcategory
+% LocalWords:  coalgorithm cocomplexity bialgorithm subcategory unitaries
