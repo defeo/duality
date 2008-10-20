@@ -1,0 +1,196 @@
+\documentclass[10pt,draft]{beamer}
+
+\usepackage[francais]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm,latexsym}
+\usepackage{mathrsfs}
+\usepackage[all]{xypic}
+
+\newcommand{\cat}[1]{\mathscr{#1}}
+\newcommand{\lcat}[1]{\mathbf{#1}}
+\newcommand{\C}{\cat{C}}
+\newcommand{\D}{\cat{D}}
+\renewcommand{\L}{\cat{L}}
+\newcommand{\comp}{\circ}
+\newcommand{\size}[1]{\lVert#1\rVert}
+\newcommand{\sizein}[1]{\size{#1}^\mathrm{in}}
+\newcommand{\sizeout}[1]{\size{#1}_\mathrm{out}}
+\DeclareMathOperator{\ob}{ob}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Id}{Id}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Complex}{\mathbb{C}}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\la}{\leftarrow}
+\DeclareMathOperator{\Time}{t}
+\DeclareMathOperator{\Space}{s}
+\DeclareMathOperator{\coTime}{co-t}
+\DeclareMathOperator{\coSpace}{co-s}
+\DeclareMathOperator{\Par}{Par}
+\newcommand{\computes}{\vdash}
+
+
+\mode<presentation>{%
+  \usetheme[]{Madrid}
+  \usefonttheme[onlymath]{serif}
+}
+
+
+\title[Principe de transposition]{Principe de transposition
+  \only<1>{et tours d'Artin-Schreier}}
+\author{L.~De~Feo}
+\institute[]{LIX, École Polytechnique}
+
+
+\AtBeginSection[]
+{
+  \begin{frame}<beamer>
+    \frametitle{Plan}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+
+\begin{document}
+
+\begin{frame}<1,2>
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Le principe de Tellegen}
+
+  \Large
+  \begin{center}
+    ``De tout \emph{algorithme linéaire} qui calcule une application
+    linéaire on peut déduire an autre \emph{algorithme linéaire} qui
+    calcule la transposée de l'application ayant \emph{à peu près} les
+    mêmes complexités en espace et temps.''
+  \end{center}
+
+  \vfill
+  \pause
+
+  \begin{center}
+    Qu'est-ce qu'il y a de tellement spécial dans la transposition ?
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Théorie des catégories, Généralités}
+  
+  \begin{columns}[t]
+    
+    \begin{column}{0.3\textwidth}
+      \begin{itemize}
+      \item Catégorie $\C$
+      \item Objets $\ob(\C)$
+      \item<2-> Flèches $\hom(\C)$, $\Hom(A,B)$
+      \item<3-> Identités $\id_A$
+      \item<4-> Composition $g\comp f$
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.7\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          A \only<2->{\ar@/^/[r] \ar@/_/[r]} \only<3->{\ar@(ul,dl)} & B \only<3->{\ar@(ur,dr)}\\
+          &  & C \only<2->{\ar[ddr]^g} \only<3->{\ar@(ul,ur)} \\
+          \\
+          & D \only<2->{\ar[uur]^f} \only<3->{\ar@(dl,dr)} \only<4->{\ar[rr]^{g\comp f}}&   & E \only<3->{\ar@(dr,dl)}
+        }
+      \end{equation*}
+      
+      \vfill
+    \end{column}
+  \end{columns}
+
+  \begin{block}<5>{Exemple : $\lcat{FMod}_R$}
+    \begin{itemize}
+    \item $\ob(\C) = R^n$ les $R$-modules libres,
+    \item $\hom(\C) = $ les applications linéaires.
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Théorie des catégories, Foncteurs}
+  
+  \begin{columns}
+    \begin{column}{0.3\textwidth}
+      Foncteur covariant $F:\C\ra\D$
+    \end{column}
+
+    \begin{column}{0.25\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          A \ar[r]^f \ar[dr]_{h} & B \ar[d]^g \\
+          & C
+        }
+      \end{equation*}
+    \end{column}
+    \begin{column}{0.05\textwidth}
+      $\mapsto$
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          F(A) \ar[r]^{F(f)} \ar[dr]_{F(h)} & F(B) \ar[d]^{F(g)} \\
+          & F(C)
+        }    
+      \end{equation*}
+    \end{column}
+  \end{columns}
+
+  \begin{columns}
+    \begin{column}{0.3\textwidth}
+      Foncteur contravariant $F:\C\ra\D$
+    \end{column}
+
+    \begin{column}{0.25\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          A \ar[r]^f \ar[dr]_{h} & B \ar[d]^g \\
+          & C
+        }
+      \end{equation*}
+    \end{column}
+    \begin{column}{0.05\textwidth}
+      $\mapsto$
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          F(A) & F(B) \ar[l]_{F(f)} \\
+          & F(C) \ar[u]_{F(g)} \ar[ul]^{F(h)}
+        }    
+      \end{equation*}
+    \end{column}
+  \end{columns}
+
+  \begin{block}{Équivalence, dualité}
+    \begin{itemize}
+    \item Équivalence si $F:\C\ra\D$ et $G:\D\ra\C$ covariants 
+    \item Dualité si $F:\C\ra\D$ et $G:\D\ra\C$ contravariants 
+    \end{itemize}
+    et $\quad F\comp G \simeq \Id_\D\quad$ et $\quad G\comp F \simeq \Id_\C$.
+  \end{block}
+  
+\end{frame}
+
+
+
+
+\end{document}
+
+
+% Local Variables:
+% mode:flyspell
+% ispell-local-dictionary:"francais"
+% End:
