@@ -1,4 +1,4 @@
-\documentclass[10pt,draft]{beamer}
+\documentclass[10pt]{beamer}
 
 \usepackage[francais]{babel}
 \usepackage[utf8]{inputenc}
@@ -44,13 +44,13 @@
 \institute[]{LIX, École Polytechnique}
 
 
-\AtBeginSection[]
-{
-  \begin{frame}<beamer>
-    \frametitle{Plan}
-    \tableofcontents[currentsection]
-  \end{frame}
-}
+%% \AtBeginSection[]
+%% {
+%%   \begin{frame}<beamer>
+%%     \frametitle{Plan}
+%%     \tableofcontents[currentsection]
+%%   \end{frame}
+%% }
 
 
 \begin{document}
@@ -185,7 +185,393 @@
 \end{frame}
 
 
+\begin{frame}
+  \frametitle{Le principe de Tellegen}
 
+  \Large
+  \begin{center}
+    ``De tout \alert{\emph{algorithme linéaire}} qui calcule une
+    application linéaire on peut déduire an autre
+    \alert{\emph{algorithme linéaire}} qui calcule la transposée de
+    l'application ayant \emph{à peu près} les mêmes complexités en
+    espace et temps.''
+  \end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Un exemple}
+
+  \begin{columns}
+
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  for i = 1 to n-2 do
+    a[i+1] = a[i] + a[i+1]
+    a[i] = 0
+  end for
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+
+      \begin{equation*}
+        \begin{pmatrix}
+          0 & \hdotsfor{3} & 0\\
+          \vdots  &  &\vdots&& \vdots \\
+          0 & \hdotsfor{3} & 0\\
+          1 & \hdotsfor{3} & 1
+        \end{pmatrix}
+      \end{equation*}
+
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Calculs}
+
+  \begin{block}{Langage, taille}
+    \begin{itemize}
+    \item Ensemble d'\emph{instructions} \hfill $\L \subset \hom(\C)$,
+    \item Fonction de taille \hfill $\size{.} : \ob(\C)\ra\N$.
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Calcul}
+    \begin{center}
+      Suite $\quad C_1:b\ra c\quad$ d'instructions.
+    \end{center}
+  \end{block}
+
+  \[\xymatrix{
+    & \ar[r]\ar@{}[dr]|{C_2} & \ar[dr] &
+    & \ar[r]\ar@{}[dr]|{C_1} & \ar[dr] \\
+    a \ar[ur]\ar@{-->}[rrr]_{f_2} &&& b
+    \ar[ur]\ar@{-->}[rrr]_{f_1} &&& c
+  }\]
+
+  \begin{block}{Coûts en temps et espace}
+    \begin{itemize}
+    \item $\Time(C) = $ longueur du calcul,
+    \item $\Space(C) = \max_{o\in C}\size{o}$.
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Le cas de $\lcat{FMod}_R$}
+  A.~Bostan, G.~Lecerf, E.~Schost :
+
+  \begin{align*}
+    +_1 : R^2 &\ra R^2         &   +_2 : R^2&\ra R^2       &  *_a : R&\ra R\\
+    (p,q)&\mapsto(p+q,q)  &      (p,q)&\mapsto(p,p+q) &       p&\mapsto ap
+  \end{align*}
+  \begin{align*}
+    \pi : R&\ra 0     &  \iota : 0&\ra R   \\
+          p&\mapsto0  &          0&\mapsto0
+  \end{align*}
+  
+  \begin{block}{}
+    \begin{equation*}
+      \label{eq:linlang}
+      \L = \Bigl\{\Id_n\times\mathrm{op}\times\Id_m \Bigl\lvert
+      n,m\in\N, \mathrm{op}\in\{+_1,+_2,*_a,\pi,\iota\;|\;a\in R\} \Bigr\}
+      \text{.}
+    \end{equation*}
+  \end{block}
+
+  \begin{block}{}
+    \begin{center}
+      $\size{R^n} = n$
+    \end{center}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Notre exemple}
+
+  \begin{columns}
+
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  \alert<2>{for i = 1 to n-2 do}
+    a[i+1] = a[i] + a[i+1]
+    a[i] = 0
+  end for
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+      \begin{minipage}{0.7\textwidth}
+        \begin{center}
+          $\phantom{ }$\\
+          $\Id_{i}\times +_2 \times\Id_{n-2-i}$\\
+          $\Id_i\times *_0 \times\Id_{n-1-i}$\\
+        \end{center}
+      \end{minipage}
+    \end{column}
+  \end{columns}
+
+  \vfill
+
+  \begin{center}
+    \[\xymatrix{
+      R^n\ar[r]^{+_2\times{\Id_{n-2}}} & R^n\ar[r]^{\*_0\times{\Id_{n-1}}} &
+      R^{n} \ar@{.}[rr] && R^n
+    }\]
+  \end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Branchements}
+
+  \begin{center}
+    \[\xymatrix{
+             &        &                 & \ar@{.}[r] & \\
+      \ar[r] & \ar[r] & \ar[ru] \ar[rd] \\
+             &        &                 & \ar@{.}[r] & 
+    }\]
+  \end{center}
+
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  \alert<2>{if \alt<1>{a = (0,...,0)}{n = 0} then}
+    ...
+  else
+    ...
+  endif
+\end{semiverbatim}
+    \end{minipage}
+  \end{center}
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Algorithme}
+
+  \begin{block}{Espace des paramètres}
+    \begin{center}
+      $\Par$ un ensemble récursivement énumérable
+    \end{center}
+    \begin{center}
+      Par exemple, $\quad \Par=\N$
+    \end{center}
+  \end{block}
+
+  \begin{block}{Algorithme}
+    \begin{center}
+      Une fonction $\qquad A:\Par \ra \C_\ra \qquad$ ($\C_\ra =$ les calculs)
+    \end{center}
+  \end{block}
+
+  \begin{columns}
+
+    \begin{column}{0.1\textwidth}
+      \begin{align*}
+        \uncover<2->{1}\\
+        \uncover<3->{2}\\
+        \uncover<4->{3}\\
+        \uncover<4->{\vdots}
+      \end{align*}
+    \end{column}
+    \begin{column}{0.9\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          \only<2->{\ar[r]} & \only<2->{\ar[rd]} & & \only<3->{\ar[r]}&\\
+                            &                    & \only<2->{\ar[r]} \only<3->{\ar[ru]}&\\
+          \only<3>{\ar[r]} \only<4->{\ar@{=>}[r]} & \only<3->{\ar[ur]}\only<4->{\ar[r]} & \only<4->{\ar[r]} & \only<4->{\ar[r]} &
+        }
+      \end{equation*}
+    \end{column}
+  \end{columns}
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Complexité}
+
+  \begin{block}{Complexité en temps}
+    \begin{center}
+      $A:\Par\ra\C_\ra\qquad$ induit une fonction
+      $\qquad\Time_A:\Par\N\qquad$ donnée par
+      \[\Time_A(x) = \Time(A(x))\]
+    \end{center}
+  \end{block}
+
+  \begin{block}{Complexité en espace}
+    \begin{center}
+      $A:\Par\ra\C_\ra\qquad$ induit une fonction
+      $\qquad\Space_A:\Par\N\qquad$ donnée par
+      \[\Space_A(x) = \Space(A(x))\]
+    \end{center}
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Notre exemple}
+
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+\only<1>{  for i = 1 to n-2 do
+    a[i+1] = a[i] + a[i+1]
+    a[i] = 0
+  end for}
+\only<2>{  a[1] = a[0] + a[1]
+  a[0] = 0
+  a[2] = a[1] + a[2]
+  a[1] = 0
+  ...
+  a[n-1] = a[n-2] + a[n-1]
+  a[n-2] = 0}
+\end{semiverbatim}
+    \end{minipage}
+  \end{center}
+
+  \vfill
+
+  \begin{center}
+    \[\uncover<2>{n \quad\mapsto\quad}\xymatrix{
+      R^n\ar[r]^{+_2\times{\Id_{n-2}}} & R^n\ar[r]^{\*_0\times{\Id_{n-1}}} &
+      R^{n} \ar@{.}[rr] && R^n
+    }\]
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Le théorème de Tellegen}
+
+  \begin{block}{Foncteur de Tellegen}
+    Un foncteur $\qquad F:\C\ra\D \qquad$ est dit de Tellegen si
+    $F(\L_\C) \subset \L_\D$.
+  \end{block}
+
+  \begin{block}{Théorème de Tellegen}
+    \begin{itemize}
+    \item $F:\C\ra\D$ un foncteur de Tellegen
+    \item $\Par$ un espace de paramètre
+    \item $A:\Par\ra\C_\ra$ un algorithme
+    \end{itemize}
+
+    $F\comp A$, noté $F(A)$ est un algorithme de $\Par\ra\D_\ra$ avec
+    \begin{itemize}
+    \item $\Time_{F(A)} = \Time_a$,
+    \item $\Space_{F(A)} = B(\Space_A)$ si $B:\N\ra\N$ est une borne sur $F$.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Le cas $\lcat{FMod}_R$}
+  
+  \begin{center}
+    On connaît un foncteur (contravariant) $\quad
+    T:\lcat{FMod}_R\ra\lcat{FMod}_R\quad$ donné par la transposition
+    des matrices.
+  \end{center}
+
+  \begin{block}{Théorème de Tellegen pour l'algèbre linéaire}
+    $T$ est un foncteur de Tellegen pour le langage $\L$ donné auparavant.
+  \end{block}
+
+  \begin{align*}
+    T(+_1) = +_2 \qquad T(*_a) = *_a \qquad T(\pi) = \iota
+  \end{align*}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Notre exemple}
+
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  a[1] = a[0] + a[1]
+  a[0] = 0
+  a[2] = a[1] + a[2]
+  a[1] = 0
+  ...
+  a[n-1] = a[n-2] + a[n-1]
+  a[n-2] = 0
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  a[n-2] = 0
+  a[n-2] = a[n-2] + a[n-1]
+  ...
+  a[1] = 0
+  a[1] = a[1] + a[2]
+  a[0] = 0
+  a[0] = a[0] + a[1]
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+    \end{columns}
+  
+  \vfill
+  \pause
+
+  \begin{columns}
+
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  for i = n-2 to 0 do
+    a[i] = 0
+    a[i] = a[i] + a[i+1]
+  end for
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+
+      \begin{equation*}
+        \begin{pmatrix}
+          0 & \hdotsfor{3} & 0\\
+          \vdots  &  &\vdots&& \vdots \\
+          0 & \hdotsfor{3} & 0\\
+          1 & \hdotsfor{3} & 1
+        \end{pmatrix}
+      \end{equation*}
+
+    \end{column}
+  \end{columns}
+\end{frame}
 
 \end{document}
 
@@ -194,3 +580,5 @@
 % mode:flyspell
 % ispell-local-dictionary:"francais"
 % End:
+
+% LocalWords:  Tellegen
