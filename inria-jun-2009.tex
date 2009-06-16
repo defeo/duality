@@ -1,0 +1,811 @@
+\documentclass[10pt,handout]{beamer}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm,latexsym}
+\usepackage{mathrsfs}
+\usepackage[all]{xypic}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,snakes,automata}
+
+\newcommand{\cat}[1]{\mathscr{#1}}
+\newcommand{\lcat}[1]{\mathbf{#1}}
+\newcommand{\C}{\cat{C}}
+\newcommand{\D}{\cat{D}}
+\renewcommand{\L}{\cat{L}}
+\newcommand{\comp}{\circ}
+\newcommand{\size}[1]{\lVert#1\rVert}
+\newcommand{\sizein}[1]{\size{#1}^\mathrm{in}}
+\newcommand{\sizeout}[1]{\size{#1}_\mathrm{out}}
+\DeclareMathOperator{\ob}{ob}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Id}{Id}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Complex}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\la}{\leftarrow}
+\DeclareMathOperator{\Time}{t}
+\DeclareMathOperator{\Space}{s}
+\DeclareMathOperator{\coTime}{co-t}
+\DeclareMathOperator{\coSpace}{co-s}
+\DeclareMathOperator{\Par}{Par}
+\newcommand{\computes}{\vdash}
+
+
+\mode<presentation>{%
+%%  \usetheme[]{Madrid}
+  \usefonttheme[onlymath]{serif}
+}
+
+
+\title{Transposition Principle}
+\subtitle{where categories meet computer algebra}
+\author{L.~De~Feo}
+\institute[TANC]{Projet TANC, LIX, École Polytechnique}
+\date[INRIA Saclay, Juin 17, 2008]{Journée des doctorants INRIA Saclay\\Orsay, June 17, 2008}
+\setbeamerfont{title}{size=\Huge}
+\setbeamerfont{subtitle}{size=\Large}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Tellegen's Principle}
+
+  \Large
+  \begin{center}
+    ``From every \emph{linear algorithm} computing a
+    linear application we can deduce another \emph{linear algorithm}
+    computing the transpose application using \emph{about} the same
+    space and time resources.''
+  \end{center}
+
+  \vfill
+
+  \begin{center}
+    What's so special about transposition ?
+  \end{center}
+\end{frame}
+
+\section{Background}
+
+\begin{frame}
+  \frametitle{History, motivations}
+  
+  \begin{block}{History}
+    \begin{itemize}
+    \item Originally discovered by \alert{Tellegen (1950)},
+      \alert{Bordewijk (1956)} for \emph{electrical network theory}
+      and by \alert{Kalman (1960)} for \emph{control theory};
+    \item Graph-theoretic approach by \alert{Fettweis (1971)} for
+      \emph{digital filters};
+    \item \alert{Fiduccia (1972)}: transposition of \emph{bilinear
+      algorithms};
+    \item Special case of reverse mode in \emph{automatic differentiation}:
+      \alert{Baur \& Strassen (1983)};
+    \item In \emph{computer algebra}, popularized by \alert{Shoup},
+      \alert{von zur Gathen}, \alert{Kaltofen},\dots
+    \item \alert{[Bostan, Lecerf, Schost 2003]} improve algorithms for
+      polynomial evaluation.
+    \end{itemize}
+  \end{block}
+  
+  \begin{block}{Motivations}
+    \begin{itemize}
+    \item Existence result in \emph{complexity theory};
+    \item \emph{Code transformation} technique;
+    \item Improve $M^T \Leftrightarrow$ Improve $M$;
+    \item {\bf Divides by $2$ the number of algorithms yet to be discovered.}
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Classical proofs}
+
+  \begin{block}{Linear algebra}
+    $M$ computed as a sequence of \emph{simple} linear applications $U_i$
+    \begin{equation*}
+      M(v) = U_1\circ U_2\circ\cdots\circ U_n(v)
+      \qquad\Leftrightarrow\qquad
+      M^T(v) = U_n^T\circ\cdots\circ U_2^T\circ U_1^T
+    \end{equation*}
+  \end{block}
+
+  \begin{block}{Graph-theoretic approach}
+    \begin{columns}
+      \begin{column}{0.6\textwidth}
+        \centering
+        \begin{tikzpicture}
+          \tikzstyle{node}=[circle,thick,draw=black,minimum size=4mm]
+          
+          \begin{scope}
+            \node(x1){$x_1$};
+            \node(x2)[right of=x1]{$x_2$};
+            \node(x3)[right of=x2]{$x_3$};
+            
+            \node[node](d1)[below of=x2]{}
+            edge(x2);
+            \node[node](d2)[below of=x3]{}
+            edge(x3);
+            
+            \node[node](p1)[below of=d1,xshift=-6mm]{$+$}
+            edge(x1)
+            edge(d1);
+            \node[node](m1)[below of=d2]{$*_3$}
+            edge(d2);
+            
+            \node[node](p2)[below of=p1]{$+$}
+            edge(p1)
+            edge(d2);
+            \node[node](p3)[right of=p2]{$+$}
+            edge(d1)
+            edge(m1);
+            
+            \node(y1)[below of=p2]{$y_1$}
+            edge(p2);
+            \node(y2)[below of=p3]{$y_2$}
+            edge(p3);
+          \end{scope}
+          
+          \begin{scope}[xshift=3.2cm, yshift=-0.23\textheight]
+            \node(x){\Huge $\leftrightarrow$};
+          \end{scope}
+          
+          \begin{scope}[xshift=4cm, yshift=-0.425\textheight]
+            \node(x1){$x_1'$};
+            \node(x2)[right of=x1]{$x_2'$};
+            \node(x3)[right of=x2]{$x_3'$};
+            
+            \node[node](d1)[above of=x2]{$+$}
+            edge(x2);
+            \node[node](d2)[above of=x3]{$+$}
+            edge(x3);
+            
+            \node[node](p1)[above of=d1,xshift=-5mm]{}
+            edge(x1)
+            edge(d1);
+            \node[node](m1)[above of=d2]{$*_3$}
+            edge(d2);
+            
+            \node[node](p2)[above of=p1]{}
+            edge(p1)
+            edge(d2);
+            \node[node](p3)[right of=p2]{}
+            edge(d1)
+            edge(m1);
+            
+            \node(y1)[above of=p2]{$y_1'$}
+            edge(p2);
+            \node(y2)[above of=p3]{$y_2'$}
+            edge(p3);
+          \end{scope}
+        \end{tikzpicture}
+      \end{column}
+      \begin{column}{0.4\textwidth}
+        \Large
+        \begin{gather*}
+          \begin{pmatrix}
+            1 & 1 & 1\\
+            0 & 1 & 3
+          \end{pmatrix}\\
+          \updownarrow\\
+          \begin{pmatrix}
+            1 & 0\\
+            1 & 1\\
+            1 & 3\\
+          \end{pmatrix}
+        \end{gather*}
+      \end{column}
+    \end{columns}
+  \end{block}
+\end{frame}
+
+
+\section{A new way of looking}
+
+\begin{frame}
+  \frametitle{Category theory, a gentle introduction...}
+  
+  \begin{columns}[t]
+    
+    \begin{column}{0.3\textwidth}
+      \begin{itemize}
+      \item Category $\C$
+      \item Objects $\ob(\C)$
+      \item<2-> Arrows $\hom(\C)$, $\Hom(A,B)$
+      \item<3-> Identities $\id_A$
+      \item<4-> Composition $g\comp f$
+      \end{itemize}
+    \end{column}
+
+    \begin{column}{0.7\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          A \only<2->{\ar@/^/[r] \ar@/_/[r]} \only<3->{\ar@(ul,dl)} & B \only<3->{\ar@(ur,dr)}\\
+          &  & C \only<2->{\ar[ddr]^g} \only<3->{\ar@(ul,ur)} \\
+          \\
+          & D \only<2->{\ar[uur]^f} \only<3->{\ar@(dl,dr)} \only<4->{\ar[rr]^{g\comp f}}&   & E \only<3->{\ar@(dr,dl)}
+        }
+      \end{equation*}
+      
+      \vfill
+    \end{column}
+  \end{columns}
+
+  \begin{block}<5>{Example : $\lcat{FMod}_R$}
+    \begin{itemize}
+    \item $\ob(\C) = R^n$ free $R$-modules,
+    \item $\hom(\C) = $ linear applications.
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Category theory, Functors}
+  
+  \begin{columns}
+    \begin{column}{0.3\textwidth}
+      Covariant functor $F:\C\ra\D$
+    \end{column}
+
+    \begin{column}{0.25\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          A \ar[r]^f \ar[dr]_{h} & B \ar[d]^g \\
+          & C
+        }
+      \end{equation*}
+    \end{column}
+    \begin{column}{0.05\textwidth}
+      $\mapsto$
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          F(A) \ar[r]^{F(f)} \ar[dr]_{F(h)} & F(B) \ar[d]^{F(g)} \\
+          & F(C)
+        }    
+      \end{equation*}
+    \end{column}
+  \end{columns}
+
+  \begin{columns}
+    \begin{column}{0.3\textwidth}
+      Contravariant functor $F:\C\ra\D$
+    \end{column}
+
+    \begin{column}{0.25\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          A \ar[r]^f \ar[dr]_{h} & B \ar[d]^g \\
+          & C
+        }
+      \end{equation*}
+    \end{column}
+    \begin{column}{0.05\textwidth}
+      $\mapsto$
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          F(A) & F(B) \ar[l]_{F(f)} \\
+          & F(C) \ar[u]_{F(g)} \ar[ul]^{F(h)}
+        }    
+      \end{equation*}
+    \end{column}
+  \end{columns}
+
+  \begin{block}{Equivalence, duality}
+    \begin{itemize}
+    \item Equivalence if $F:\C\ra\D$ and $G:\D\ra\C$ covariant
+    \item Duality if $F:\C\ra\D$ and $G:\D\ra\C$ contravariant 
+    \end{itemize}
+    and $\quad F\comp G \simeq \Id_\D\quad$ and $\quad G\comp F \simeq \Id_\C$.
+  \end{block}
+  
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{An example}
+
+  \Large
+
+  \begin{columns}
+
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \begin{minipage}{0.9\textwidth}
+\begin{semiverbatim}
+  for i = 1 to n-2 do
+    a[i+1] = a[i] + a[i+1]
+    a[i] = 0
+  end for
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+
+    \begin{column}{0.4\textwidth}
+
+      \begin{equation*}
+        \begin{pmatrix}
+          0 & \hdotsfor{3} & 0\\
+          \vdots  &  &\vdots&& \vdots \\
+          0 & \hdotsfor{3} & 0\\
+          1 & \hdotsfor{3} & 1
+        \end{pmatrix}
+      \end{equation*}
+
+    \end{column}
+  \end{columns}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Computations}
+
+  \begin{block}{Language, size}
+    \begin{itemize}
+    \item Set of \emph{instructions} \hfill $\L \subset \hom(\C)$,
+    \item Size function \hfill $\size{.} : \ob(\C)\ra\N$.
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Computation}
+    \begin{center}
+      Sequence $\quad C_1:b\ra c\quad$ of instructions.
+    \end{center}
+  \end{block}
+
+  \[\xymatrix{
+    & \ar[r]\ar@{}[dr]|{C_2} & \ar[dr] &
+    & \ar[r]\ar@{}[dr]|{C_1} & \ar[dr] \\
+    a \ar[ur]\ar@{-->}[rrr]_{f_2} &&& b
+    \ar[ur]\ar@{-->}[rrr]_{f_1} &&& c
+  }\]
+
+  \begin{block}{Time and space cost}
+    \begin{itemize}
+    \item $\Time(C) = $ length of the computation,
+    \item $\Space(C) = \max_{o\in C}\size{o}$.
+    \end{itemize}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The case $\lcat{FMod}_R$}
+  [A.~Bostan, G.~Lecerf, E.~Schost 2003] :
+
+  \begin{align*}
+    +_1 : R^2 &\ra R^2         &   +_2 : R^2&\ra R^2       &  *_a : R&\ra R\\
+    (p,q)&\mapsto(p+q,q)  &      (p,q)&\mapsto(p,p+q) &       p&\mapsto ap
+  \end{align*}
+  \begin{align*}
+    \pi : R&\ra 0     &  \iota : 0&\ra R   \\
+          p&\mapsto0  &          0&\mapsto0
+  \end{align*}
+  
+  \begin{block}{}
+    \begin{equation*}
+      \label{eq:linlang}
+      \L = \Bigl\{\Id_n\times\mathrm{op}\times\Id_m \Bigl\lvert
+      n,m\in\N, \mathrm{op}\in\{+_1,+_2,*_a,\pi,\iota\;|\;a\in R\} \Bigr\}
+      \text{.}
+    \end{equation*}
+  \end{block}
+
+  \begin{block}{}
+    \begin{center}
+      $\size{R^n} = n$
+    \end{center}
+  \end{block}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Our example}
+
+  \Large
+
+  \begin{columns}
+
+    \begin{column}{0.6\textwidth}
+      \begin{center}
+        \begin{minipage}{\textwidth}
+\begin{semiverbatim}
+  \alert<2>{for i = 1 to n-2 do}
+    a[i+1] = a[i] + a[i+1]
+    a[i] = 0
+  end for
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+
+    \begin{column}{0.4\textwidth}
+      \begin{minipage}{\textwidth}
+        \begin{flushright}
+          $\phantom{ }$\\
+          $\Id_{i}\times +_2 \times\Id_{n-2-i}$\\
+          $\Id_i\times *_0 \times\Id_{n-1-i}$\\
+        \end{flushright}
+      \end{minipage}
+    \end{column}
+  \end{columns}
+
+  \vfill
+
+  \begin{center}
+    \[\xymatrix@C=3.5em{
+      R^n\ar[r]^{+_2\times{\Id_{n-2}}} & R^n\ar[r]^{*_0\times{\Id_{n-1}}} &
+      R^{n} \ar@{.}[rr] && R^n
+    }\]
+  \end{center}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Branchings}
+
+  \Large
+
+  \begin{center}
+    \[\xymatrix{
+             &        &                 & \ar@{.}[r] & \\
+      \ar[r] & \ar[r] & \ar[ru] \ar[rd] \\
+             &        &                 & \ar@{.}[r] & 
+    }\]
+  \end{center}
+
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  \alert<2>{if \alt<1>{a = (0,...,0)}{n = 0} then}
+    ...
+  else
+    ...
+  endif
+\end{semiverbatim}
+    \end{minipage}
+  \end{center}
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Algorithm}
+
+  \begin{block}{Parameter space}
+    \begin{center}
+      $\Par$ a recursively enumerable
+    \end{center}
+    \begin{center}
+      For example, $\quad \Par=\N$
+    \end{center}
+  \end{block}
+
+  \begin{block}{Algorithm}
+    \begin{center}
+      A function $\qquad A:\Par \ra \C_\ra \qquad$ ($\C_\ra =$ the computations)
+    \end{center}
+  \end{block}
+
+  \begin{columns}
+
+    \begin{column}{0.1\textwidth}
+      \begin{align*}
+        \uncover<2->{1}\\
+        \uncover<3->{2}\\
+        \uncover<4->{3}\\
+        \uncover<4->{\vdots}
+      \end{align*}
+    \end{column}
+    \begin{column}{0.9\textwidth}
+      \begin{equation*}
+        \xymatrix{
+          \only<2->{\ar[r]} & \only<2->{\ar[rd]} & & \only<3->{\ar[r]}&\\
+                            &                    & \only<2->{\ar[r]} \only<3->{\ar[ru]}&\\
+          \only<3>{\ar[r]} \only<4->{\ar@{=>}[r]} & \only<3->{\ar[ur]}\only<4->{\ar[r]} & \only<4->{\ar[r]} & \only<4->{\ar[r]} &
+        }
+      \end{equation*}
+    \end{column}
+  \end{columns}
+  
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Complexity}
+
+  \begin{block}{Time complexity}
+    \begin{center}
+      $A:\Par\ra\C_\ra\qquad$ induces a function
+      $\qquad\Time_A:\Par\ra\N\qquad$ given by
+      \[\Time_A(x) = \Time(A(x))\]
+    \end{center}
+  \end{block}
+
+  \begin{block}{Space complexity}
+    \begin{center}
+      $A:\Par\ra\C_\ra\qquad$ induces a function
+      $\qquad\Space_A:\Par\ra\N\qquad$ given by
+      \[\Space_A(x) = \Space(A(x))\]
+    \end{center}
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Our example}
+
+  \large
+
+  \begin{center}
+    \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+\only<1>{  for i = 1 to n-2 do
+    a[i+1] = a[i] + a[i+1]
+    a[i] = 0
+  end for}
+\only<2>{  a[1] = a[0] + a[1]
+  a[0] = 0
+  a[2] = a[1] + a[2]
+  a[1] = 0
+  ...
+  a[n-1] = a[n-2] + a[n-1]
+  a[n-2] = 0}
+\end{semiverbatim}
+    \end{minipage}
+  \end{center}
+
+  \vfill
+
+  \begin{center}
+    \[\uncover<2>{n \quad\mapsto\quad}\xymatrix@C=3.5em{
+      R^n\ar[r]^{+_2\times{\Id_{n-2}}} & R^n\ar[r]^{*_0\times{\Id_{n-1}}} &
+      R^{n} \ar@{.}[rr] && R^n
+    }\]
+  \end{center}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Tellegen's theorem}
+
+  \begin{block}{T-functor}
+    A functor $\qquad F:\C\ra\D \qquad$ is said to be a T-functor if
+    $F(\L_\C) \subset \L_\D$.
+  \end{block}
+
+  \begin{block}{Tellegen's theorem}
+    \begin{itemize}
+    \item $F:\C\ra\D$ a T-functor
+    \item $\Par$ a parameter space
+    \item $A:\Par\ra\C_\ra$ an algorithm
+    \end{itemize}
+
+    $F\comp A$, noted $F(A)$ is an algorithm $\Par\ra\D_\ra$ such that
+    \begin{itemize}
+    \item $\Time_{F(A)} = \Time_A$,
+    \item $\Space_{F(A)} \le B(\Space_A)$ if $B:\N\ra\N$ is an upper
+      bound for $F$.
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The case $\lcat{FMod}_R$}
+  
+  \begin{center}
+    We know a (contravariant) functor $\quad
+    T:\lcat{FMod}_R\ra\lcat{FMod}_R\quad$ given by matrix
+    transposition.
+  \end{center}
+
+  \begin{block}{Tellegen's theorem for linear algebra}
+    $T$ is a T-functor for the language $\L$ we gave before.
+  \end{block}
+
+  \begin{align*}
+    T(+_1) = +_2 \qquad T(*_a) = *_a \qquad T(\pi) = \iota
+  \end{align*}
+\end{frame}
+
+
+
+\section{Examples}
+
+\begin{frame}[fragile]
+  \frametitle{Our example}
+
+  \begin{columns}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  a[1] = a[0] + a[1]
+  a[0] = 0
+  a[2] = a[1] + a[2]
+  a[1] = 0
+  ...
+  a[n-1] = a[n-2] + a[n-1]
+  a[n-2] = 0
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  a[n-2] = 0
+  a[n-2] = a[n-2] + a[n-1]
+  ...
+  a[1] = 0
+  a[1] = a[1] + a[2]
+  a[0] = 0
+  a[0] = a[0] + a[1]
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+    \end{columns}
+  
+  \vfill
+  \pause
+
+  \begin{columns}
+
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{minipage}{0.7\textwidth}
+\begin{semiverbatim}
+  for i = n-2 to 0 do
+    a[i] = 0
+    a[i] = a[i] + a[i+1]
+  end for
+\end{semiverbatim}
+        \end{minipage}
+      \end{center}
+    \end{column}
+
+    \begin{column}{0.5\textwidth}
+
+      \begin{equation*}
+        \begin{pmatrix}
+          0 & \hdotsfor{3} & 0\\
+          \vdots  &  &\vdots&& \vdots \\
+          0 & \hdotsfor{3} & 0\\
+          1 & \hdotsfor{3} & 1
+        \end{pmatrix}
+      \end{equation*}
+
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Other T-functors: Quantum Computing}
+
+  \begin{block}{The QC category $\cat{Q}$}
+    \begin{center}
+    $\ob(\cat{Q}) = \{\left(\Complex^2\right)^{\otimes n}\;|\;n\in\N\}
+    \qquad\qquad \hom(\cat{Q}) = U \text{ unitaries}$
+    \end{center}
+  \end{block}
+
+  \begin{equation*}
+    H = \frac{1}{\sqrt{2}}\begin{pmatrix}
+      1 & -1 \\ -1 & 1
+    \end{pmatrix},
+    \qquad
+    R = \begin{pmatrix}
+      1 & 0 \\ 0 & e^{2\pi i }
+    \end{pmatrix},
+    \qquad
+    CNOT = \begin{pmatrix}
+      1 & 0 & 0 & 0\\
+      0 & 1 & 0 & 0\\
+      0 & 0 & 0 & 1\\
+      0 & 0 & 1 & 0
+    \end{pmatrix}
+  \end{equation*}
+
+  \begin{block}{Language, size}
+    $\L = \Bigl\{\Id_2^{\otimes
+      n}\otimes\mathrm{op}\otimes\Id_2^{\otimes m}\Bigl\lvert
+    n,m\in\N, \mathrm{op}\in\{H,R,R^\ast,CNOT\} \Bigr\}$
+
+    $\size{(\Complex^2)^{\otimes n}} = n$
+  \end{block}
+  
+  \begin{block}{The functor}
+    \begin{center}
+      $\ast : U\mapsto U^\ast$
+    \end{center}
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Other T-functors: Extension and restriction of scalars}
+
+  \begin{block}{}
+    $A,B$ two rings, $f:A\ra B$ a morphism,
+    \begin{itemize}
+    \item $E_f : M_A\mapsto M_A\otimes_AB$ maps $A$-modules to
+      $B$-modules;
+    \item $R_F : M_B\mapsto M_B$ maps $B$-modules to $A$-modules (by
+      the law $am \equiv f(a)m$).
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Extension}
+    \begin{itemize}
+    \item Every algorithm written for $\R$-modules works for
+      $\Complex$-modules;
+    \item Every algorithm written for $\Z$-modules works for any module;
+    \item Every algorithm written for $\K[X]$-modules works for
+      $K[X]/P(X)$ modules.
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Restriction}
+    \begin{itemize}
+    \item Less important than extension;
+    \item its \alert{adjoint}, not its inverse (extension of scalars
+      may loose information).
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Conclusions}
+
+  \begin{block}{Towards theory}
+    \begin{itemize}
+    \item Is this new point of view more enlightening?
+    \item Are there any other interesting T-functors?
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Towards practice}
+    \begin{itemize}
+    \item Is it always possible to find the minimal parameter space?
+    \item How much does the non-linear code (conditionals and loops)
+      change when we transpose?
+    \item Can we dream of a working AT tool?
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+\end{document}
+
+
+
+
+% Local Variables:
+% mode:flyspell
+% ispell-local-dictionary:"british"
+% End:
+
+% LocalWords:  Tellegen tellegenish
