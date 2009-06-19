@@ -26,7 +26,7 @@
 \newcommand{\Complex}{\mathbb{C}}
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\K}{\mathbb{K}}
-\renewcommand{\L}{\mathbb{L}}
+\newcommand{\LK}{\mathbb{L}}
 \newcommand{\ra}{\rightarrow}
 \newcommand{\la}{\leftarrow}
 \DeclareMathOperator{\Time}{t}
@@ -820,20 +820,20 @@
   \begin{columns}
     \begin{column}{0.45\textwidth}
       \begin{block}{Dual space}
-        $\L/\K$ a field extension, $\L^\ast\;$ the space of $\K$-linear forms over
-        $\;\L$
+        $\LK/\K$ a field extension, $\LK^\ast\;$ the space of $\K$-linear forms over
+        $\;\LK$
         \begin{align*}
-          V \text{ basis of } \L &\;\rightarrow\; V^\ast
-          \text{ basis of } \L^\ast\\
-          \ell\in\L^\ast &\;\rightarrow\;
+          V \text{ basis of } \LK &\;\rightarrow\; V^\ast
+          \text{ basis of } \LK^\ast\\
+          \ell\in\LK^\ast &\;\rightarrow\;
           \left(\ell(V_0),\ldots,\ell(V_n)\right)
         \end{align*}
       \end{block}
     \end{column}
     \begin{column}{0.5\textwidth}
       \begin{block}{Multiplication}
-        Let $x\in\L$, multiplication by $x$ is a linear application
-        $\L\rightarrow\L$ with matrix $M_x$:
+        Let $x\in\LK$, multiplication by $x$ is a linear application
+        $\LK\rightarrow\LK$ with matrix $M_x$:
         \begin{equation*}
           \begin{pmatrix}\\&M_x&\\&\end{pmatrix} 
           \begin{pmatrix}\\y\\{}\end{pmatrix} \;\mapsto\;
@@ -844,7 +844,7 @@
   \end{columns}
 
   \begin{block}{Transposed multiplication}
-    Let $\;x\in\L$, $\;\ell\in\L^\ast$, middle product, noted
+    Let $\;x\in\LK$, $\;\ell\in\LK^\ast$, middle product, noted
     $\;x\cdot\ell\;$, is the linear operation
     \begin{equation*}
       \begin{pmatrix}&x\cdot\ell&\end{pmatrix}
