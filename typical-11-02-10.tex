@@ -1,0 +1,336 @@
+\documentclass[10pt]{beamer}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb,amsthm,latexsym}
+\usepackage{mathrsfs}
+\usepackage[all]{xypic}
+\usepackage{tikz}
+\usetikzlibrary{arrows,shapes,automata}
+
+\newcommand{\cat}[1]{\mathscr{#1}}
+\newcommand{\lcat}[1]{\mathbf{#1}}
+\newcommand{\C}{\cat{C}}
+\newcommand{\D}{\cat{D}}
+\renewcommand{\L}{\cat{L}}
+\newcommand{\comp}{\circ}
+\newcommand{\size}[1]{\lVert#1\rVert}
+\newcommand{\sizein}[1]{\size{#1}^\mathrm{in}}
+\newcommand{\sizeout}[1]{\size{#1}_\mathrm{out}}
+\DeclareMathOperator{\ob}{ob}
+\DeclareMathOperator{\Hom}{Hom}
+\DeclareMathOperator{\id}{id}
+\DeclareMathOperator{\Id}{Id}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Complex}{\mathbb{C}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\K}{\mathbb{K}}
+\newcommand{\LK}{\mathbb{L}}
+\newcommand{\ra}{\rightarrow}
+\newcommand{\la}{\leftarrow}
+\DeclareMathOperator{\Time}{t}
+\DeclareMathOperator{\Space}{s}
+\DeclareMathOperator{\coTime}{co-t}
+\DeclareMathOperator{\coSpace}{co-s}
+\DeclareMathOperator{\Par}{Par}
+\DeclareMathOperator{\Tr}{Tr}
+\DeclareMathOperator{\rev}{rev}
+\newcommand{\computes}{\vdash}
+
+
+\mode<presentation>{%
+  \usetheme[]{Madrid}
+  \usecolortheme{seahorse}
+  \usecolortheme{rose}
+  \usefonttheme[onlymath]{serif}
+}
+
+
+\title{On the transposition of black box matrices}
+\author[L. De Feo]{L.~De~Feo\\{\footnotesize(joint work with É.~Schost)}}
+\institute[TANC, LIX]{Projet TANC, LIX, École Polytechnique}
+\date[Typical, February 11, 2010]{Séminaire TypiCal\\February 11, 2010}
+
+%% \AtBeginSection[]
+%% {
+%%   \begin{frame}<beamer>
+%%     \frametitle{Plan}
+%%     \tableofcontents[currentsection]
+%%   \end{frame}
+%% }
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\section{Black-box model}
+
+\begin{frame}
+  \frametitle{The power iteration}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{From numerical algorithms to exact algorithms}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{From sparse to black-box matrices}
+
+\end{frame}
+
+%%
+%%
+
+\section{Algebraic complexity}
+
+\begin{frame}
+  \frametitle{Measuring the complexity of black-box algorithms}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Arithmetic circuits}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Arithmetic Circuits: uniform vs. non-uniform}
+
+\end{frame}
+
+%%
+%%
+
+\section{The transposition theorem}
+
+\begin{frame}
+  \frametitle{Transposition of an arithmetic circuit}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{History of the transposition theorem}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{From non-uniform to uniform circuits?}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{The case of multiplication}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{The parameter space: \texttt{linear} and \texttt{const}
+    variables}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Formal definition of a \emph{linear program}}
+
+\end{frame}
+
+%%
+%%
+
+\section{A transposable language}
+
+\begin{frame}
+  \frametitle{TransAL: the Transposable Algebraic Language}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Transposing a simple code}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Automatic transposition: the general algorithm}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Non-linear prediction and tail recursion}
+
+\end{frame}
+
+%%
+%%
+
+\section{Constness inference system}
+
+\begin{frame}
+  \frametitle{Automatic deduction of constness, a simple idea}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{The problem, relationship with generically quantified types}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{A simple algorithm}
+
+\end{frame}
+
+%%
+%%
+
+\section{Transalpyne}
+
+\begin{frame}
+  \frametitle{A Python implementation of TransAL}
+
+\end{frame}
+
+%%
+%%
+
+\section{A categorical point of view}
+
+\begin{frame}
+  \frametitle{Arrows, not circuits !}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Transposition as a contravariant functor}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Some trivial applications}
+
+\end{frame}
+
+%%
+
+\begin{frame}
+  \frametitle{Some interesting problems}
+
+\end{frame}
+
+%%
+%%
+
+\begin{frame}
+  \frametitle{Bibliography}
+
+  \begin{thebibliography}{1}
+  
+  \bibitem[B\"urgisser, Clausen, Shokrollahi]{BCS}P.~Bürgisser, M.~Clausen \& M.~A.~Shokrollahi,
+    \newblock \emph{Algebraic Complexity Theory}.
+    \newblock Springer, 1997.
+    
+  \bibitem[Bostan, Lercerf, Schost '03]{BLS03}A.~Bostan, G.~Lecerf \& E.~Schost,
+    \newblock Tellegen's Principle into Practice.
+    \newblock \emph{Proceedings of ISAAC 2003}.
+
+  \bibitem[D.F., Schost '09]{DFS09}
+    L.~De~Feo and {\'E}.~Schost.
+    \newblock Fast arithmetics in Artin-Schreier towers over finite fields. 
+    \newblock In \emph{ISSAC'09}, pages 127--134. ACM, 2010.
+
+  \bibitem[Kaltofen '00]{Ka2k}
+    E.~Kaltofen.
+    \newblock Challenges of symbolic computation: my
+    favorite open problems.
+    \newblock \emph{Journal of Symbolic Computation}, 29(6):891--919, 2000.
+
+  \bibitem[Kaltofen, Trager '90]{KaTr90}
+    E.~Kaltofen, B.~M.~Trager.
+    \newblock Computing with polynomials given by black boxes for their
+    evaluations: greatest common divisors, factorization, separation of 
+    numerators and denominators.
+    \newblock \emph{J. Symb. Comput.}, 9:301--320, 1990.
+
+  \end{thebibliography}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Bibliography}
+
+  \begin{thebibliography}{1}
+  
+  \bibitem[Page, Brin, Motwani, Winograd '99]{google}
+    L.~Page, S.~Brin, R.~Motwani and T.~Winograd.
+    \newblock The PageRank Citation Ranking: Bringing Order to the Web.
+    \newblock \emph{Technical Report}, Stanford InfoLab, 1999,
+    \url{http://ilpubs.stanford.edu:8090/422/}.
+
+  \bibitem[Pascal, Schost '06]{PS06}
+    C.~Pascal and \'E.~Schost.
+    \newblock Change of order for bivariate triangular sets.
+    \newblock In \emph{ISSAC'06}, pages 277--284. ACM, 2006.
+    
+  \bibitem[Shoup '95]{Sho95}
+    V.~Shoup.
+    \newblock A new polynomial factorization algorithm and its implementation.
+    \newblock \emph{J. Symb. Comp.}, 20(4):363--397, 1995.
+    
+  \bibitem[Wiedemann '86]{Wie86}
+    D.~H.~Wiedemann.
+    \newblock Solving Sparse Linear Equations Over Finite Fields.
+    \newblock \emph{IEEE Trans. Inf. Theory}, vol. IT-32:54--62, 1986.
+
+  \end{thebibliography}
+\end{frame}
+
+\end{document}
+
+
+
+
+
+%%% Local Variables: 
+%%% mode:flyspell
+%%% ispell-local-dictionary:"british"
+%%% mode: TeX-PDF
+%%% TeX-master: t
+%%% End: 
+%
+% LocalWords:  Tellegen
