@@ -896,6 +896,101 @@ def (R c, R b)fT(R a, R d):
 \end{lstlisting}      
     \end{column}
   \end{columns}
+
+  \pause 
+  
+  {\color{red}
+  \begin{picture}(0,0)
+    \thicklines
+    \put(280,133){\oval(80,15)}
+  \end{picture}}
+\end{frame}
+
+%%
+%%
+
+
+\section{Conclusion}
+
+\begin{frame}
+  \frametitle{Conclusion}
+  
+  \begin{block}{What we achieved}
+    \begin{itemize}
+    \item Transposition of multilinear/recursive code.
+    \item An (almost complete) python implementation of transposition
+      in the form of a compiler/interpreter.
+    \item \tALpy{} can be easily used on top of CAS that have a python
+      interface.
+    \item Other CAS will be able to use \tALpy{} as we will add more
+      languages to the output of the compiler (OCaml and Haskell look
+      easy, C is somewhat harder).
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{Limitations}
+    \begin{itemize}
+    \item We trust the user not to introduce side effects.
+    \item No formal proof of correctness... Do I trust my compiler?
+    \item It would be nice to have types checked statically
+      $\rightarrow$ Implementation as a Haskell extension?
+    \end{itemize}
+  \end{block}
+\end{frame}
+
+%%
+
+\lstset{language=python}
+
+\begin{frame}[fragile]
+  \frametitle{Karatsuba in \tALpy}
+
+\begin{lstlisting}
+def (M c)karatsuba(M a, M b, n):
+  if n == 1:
+    tmp = M.zero()
+    tmp[0] += a[0]*b[0]
+    c = tmp
+  elif n > 1:
+    a0, a1 = split(a, n/2, n)
+    b0, b1 = split(b, n/2, n)
+    x0 = karatsuba(a0, b0, n/2)
+    x2 = karatsuba(a1, b1, n - n/2)
+    x1 = karatsuba((a1 + a0), (b1 + b0), n - n/2) - x0 - x2
+    c = shift(x2, n, n+1) + shift(x1, n/2, n+1) + x0
+\end{lstlisting}
+\end{frame}
+
+%%
+
+\begin{frame}[fragile]
+  \frametitle{Karatsuba in \tALpy}
+
+  \lstset{basicstyle=\ttfamily\footnotesize}
+\begin{lstlisting}
+(M b)karatsubaT(M a, M c, n)
+  # Forward sweep
+  if (n == 1):
+    pass
+  elif n > 1:
+    a0, a1 = split(a, n / 2, n)
+  # Reverse sweep
+  if (n == 1):
+    tmp = c
+    _transAL_tmp_0[0] += a[0] * tmp[0]
+    b = _transAL_tmp_0
+  elif n > 1:
+    x2 = trans shift(c, n, n + 1)
+    x1 = trans shift(c, n / 2, n + 1)
+    x0 = c
+    b1 = trans karatsuba(x1, a1 + a0, n - n / 2)
+    b0 = b1
+    x0 += - x1
+    x2 += - x1
+    b1 += trans karatsuba(x2, a1, n - n / 2)
+    b0 += trans karatsuba(x0, a0, n / 2)
+    b = trans split(b0, b1, n / 2, n)
+\end{lstlisting}
 \end{frame}
 
 %%
@@ -1164,95 +1259,22 @@ class AdditiveArrow (~>) where
   
 \end{frame}
 
-
 %%
-%%
-
-
-\section{Conclusion}
 
 \begin{frame}
-  \frametitle{Conclusion}
-  
-  \begin{block}{What we achieved}
-    \begin{itemize}
-    \item Transposition of multilinear/recursive code.
-    \item An (almost complete) python implementation of transposition
-      in the form of a compiler/interpreter.
-    \item \tALpy{} can be easily used on top of CAS that have a python
-      interface.
-    \item Other CAS will be able to use \tALpy{} as we will add more
-      languages to the output of the compiler (OCaml and Haskell look
-      easy, C is somewhat harder).
-    \end{itemize}
-  \end{block}
+  \frametitle{Future work}
 
-  \begin{block}{Future work}
-    \begin{itemize}
-    \item Earn Mr. Jekyll a doctoral degree.
-    \item Finish the implementation of \tALpy{} and release it at
-      \url{http://transalpyne.gforge.inria.fr/}.
-    \item Write \lstinline{AdditiveArrow} in CoqMT.
-    \end{itemize}
-  \end{block}
+  \begin{itemize}
+  \item Earn Mr. Jekyll a doctoral degree.
+  \item Finish the implementation of \tALpy{} and release it at
+    \url{http://transalpyne.gforge.inria.fr/}.
+  \item Write \lstinline{AdditiveArrow} in CoqMT.
+  \end{itemize}
 \end{frame}
 
 %%
-
-\lstset{language=python}
-
-\begin{frame}[fragile]
-  \frametitle{Karatsuba in \tALpy}
-
-\begin{lstlisting}
-def (M c)karatsuba(M a, M b, n):
-  if n == 1:
-    tmp = M.zero()
-    tmp[0] += a[0]*b[0]
-    c = tmp
-  elif n > 1:
-    a0, a1 = split(a, n/2, n)
-    b0, b1 = split(b, n/2, n)
-    x0 = karatsuba(a0, b0, n/2)
-    x2 = karatsuba(a1, b1, n - n/2)
-    x1 = karatsuba((a1 + a0), (b1 + b0), n - n/2) - x0 - x2
-    c = shift(x2, n, n+1) + shift(x1, n/2, n+1) + x0
-\end{lstlisting}
-\end{frame}
-
 %%
 
-\begin{frame}[fragile]
-  \frametitle{Karatsuba in \tALpy}
-
-  \lstset{basicstyle=\ttfamily\footnotesize}
-\begin{lstlisting}
-(M b)karatsubaT(M a, M c, n)
-  # Forward sweep
-  if (n == 1):
-    pass
-  elif n > 1:
-    a0, a1 = split(a, n / 2, n)
-  # Reverse sweep
-  if (n == 1):
-    tmp = c
-    _transAL_tmp_0[0] += a[0] * tmp[0]
-    b = _transAL_tmp_0
-  elif n > 1:
-    x2 = trans shift(c, n, n + 1)
-    x1 = trans shift(c, n / 2, n + 1)
-    x0 = c
-    b1 = trans karatsuba(x1, a1 + a0, n - n / 2)
-    b0 = b1
-    x0 += - x1
-    x2 += - x1
-    b1 += trans karatsuba(x2, a1, n - n / 2)
-    b0 += trans karatsuba(x0, a0, n / 2)
-    b = trans split(b0, b1, n / 2, n)
-\end{lstlisting}
-\end{frame}
-
-%%
 
 {
   \setbeamertemplate{navigation symbols}{}
@@ -1260,7 +1282,7 @@ def (M c)karatsuba(M a, M b, n):
   \begin{frame}[plain]
     \vspace{8cm}
     \begin{center}
-      \textcolor{white}{\Huge The End}
+      \textcolor{white}{\Huge The End?}
     \end{center}
   \end{frame}
 }
